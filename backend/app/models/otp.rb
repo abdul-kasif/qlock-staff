@@ -1,0 +1,2 @@
+class Otp < ApplicationRecord
+end
