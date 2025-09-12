@@ -1,0 +1,76 @@
+# ========================
+# Ruby on Rails (backend)
+# ========================
+
+# Logs and temp files
+/backend/log/*.log
+/backend/tmp/
+/backend/.byebug_history
+
+# Database
+/backend/db/*.sqlite3
+/backend/db/*.sqlite3-journal
+/backend/db/schema.rb
+/backend/db/development.sqlite3
+/backend/db/test.sqlite3
+
+# Credentials (VERY IMPORTANT)
+/backend/config/master.key
+
+# Environment variables
+/backend/.env
+/backend/.env.local
+/backend/.env.*.local
+
+# Bootsnap
+/backend/tmp/cache/
+/backend/tmp/.ruby_inline/
+
+# Spring
+/backend/spring/*.pid
+
+# Public system files (uploaded files in dev)
+/backend/public/system/
+
+# Webpacker / Assets (if using)
+/backend/public/packs/
+/backend/public/packs-test/
+/backend/node_modules/          # if you have JS in Rails
+/backend/yarn-error.log
+/backend/yarn-debug.log
+
+# IDE / Editor
+/backend/.vscode/
+/backend/.idea/
+/backend/.sublime-project
+/backend/.sublime-workspace
+
+# macOS
+/backend/.DS_Store
+
+# Docker (optional — if you’re not sharing Docker setup)
+/backend/Dockerfile
+/backend/docker-compose.yml
+
+# ========================
+# React + Vite (frontend)
+# ========================
+
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.env
+/frontend/.env.local
+/frontend/.env.*.local
+
+# Vite cache
+/frontend/.vite/
+
+# Logs
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+.frontend/pnpm-debug.log*
+
+# IDE
+/frontend/.vscode/
+/frontend/.idea/
