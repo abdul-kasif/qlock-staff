@@ -29,6 +29,15 @@ gem "kamal", require: false
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
 gem "thruster", require: false
 
+# Use Rails Dotenv for accessing environmental variables
+gem "dotenv-rails"
+
+# Use Letter Opener for delivering OTP in development
+gem "letter_opener", group: :development
+
+# Use JWT for Jwt token authenticaiton
+gem "jwt"
+
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 

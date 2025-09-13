@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  email: MyString
+  code: MyString
+  expires_at: 2025-09-12 22:08:23
+  attempts: 1
+
+two:
+  email: MyString
+  code: MyString
+  expires_at: 2025-09-12 22:08:23
+  attempts: 1
