@@ -116,6 +116,8 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     json (2.13.2)
+    jwt (3.1.2)
+      base64
     kamal (2.7.0)
       activesupport (>= 7.0)
       base64 (~> 0.2)
@@ -329,6 +331,7 @@ DEPENDENCIES
   brakeman
   debug
   dotenv-rails
+  jwt
   kamal
   letter_opener
   pg (~> 1.1)

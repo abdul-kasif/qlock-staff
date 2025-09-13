@@ -61,13 +61,13 @@ class AuthController < ApplicationController
       end
 
       # Establish session
-      session[:staff_id] = staff.id
+      token = JwtService.encode(staff_id: staff.id)
 
       render json: {
         message: "OTP verified successfully",
         is_new_staff: is_new_staff,
         staff_id: staff.id,
-        session_token: request.session_options[:id]
+        token: token # JWT Token , store this in frontend locally
       }, status: :ok
 
     else
