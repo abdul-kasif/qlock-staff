@@ -11,7 +11,8 @@ class DashboardController < ApplicationController
         name: staff.name,
         emall: staff.email,
         staff_personal_id: staff.staff_personal_id,
-        department: staff.department
+        department: staff.department,
+        profile_complete: staff.profile_complete
       },
       active_sessions: active_sessions.as_json(only: [:id, :title, :google_form_url, :test_duration_minutes, :access_code, :started_at]),
       history_sessions: history_sessions.as_json(only: [:id, :title, :google_form_url, :test_duration_minutes, :started_at, :ended_at])
