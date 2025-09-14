@@ -8,4 +8,15 @@ Rails.application.routes.draw do
 
   # Dashboard routes
   get "/dashboard", to: "dashboard#show"
-end 
+
+  # Assessment session routes
+  resources :sessions, controller: "assessment_session", only: [:create, :show] do
+    member do
+      patch :stop
+    end
+    collection do
+      get :active
+      get :history
+    end
+  end
+end
