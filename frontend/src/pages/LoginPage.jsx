@@ -1,47 +1,25 @@
-import EmailInput from "@/components/auth/EmailInput";
-import OtpInput from "@/components/auth/OtpInput";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useState } from "react";
-import { Toaster } from "sonner";
+// src/pages/LoginPage.jsx
+import LoginCard from "../components/auth/LoginCard";
+import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../context/AuthContext";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
-
-  const handleOtpSent = () => {
-    setOtpSent(true);
-  };
+  const navigate = useNavigate();
+  const { login } = useAuthContext();
 
   const handleVerifySuccess = (result) => {
-    console.log("Login success:", result);
+    login(result.token, {
+      id: result.staff_id,
+      is_new_staff: result.is_new_staff,
+      profile_complete: !result.is_new_staff, // if existing, profile_complete = true
+    });
+
     if (result.is_new_staff) {
-      alert("New staff — redirect to profile setup");
+      navigate("/profile");
     } else {
-      alert("Existing staff — redirect to dashboard");
+      navigate("/dashboard");
     }
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Toaster position="top-center" richColors />
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">
-            QLock Staff Portal
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {!otpSent ? (
-            <EmailInput
-              email={email}
-              setEmail={setEmail}
-              onOtpSent={handleOtpSent}
-            />
-          ) : (
-            <OtpInput email={email} onVerifySuccess={handleVerifySuccess} />
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  );
+  return <LoginCard onVerifySuccess={handleVerifySuccess} />;
 }
