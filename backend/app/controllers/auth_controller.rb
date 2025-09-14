@@ -53,11 +53,13 @@ class AuthController < ApplicationController
 
     # Check the input OTP is vaild or not
     if otp.otp_valid?(input_otp)
-      staff = Staff.find_by(email: email) # check whether the user exist or not
-      is_new_staff = staff.nil?
+      staff = Staff.find_by(email: email) # check whether the user exist and profile is complete
 
-      if is_new_staff
+      if staff.nil?
         staff = Staff.create!(email: email, profile_complete: false)
+        is_new_staff = true
+      else
+        is_new_staff = !staff.profile_complete
       end
 
       # Establish session
