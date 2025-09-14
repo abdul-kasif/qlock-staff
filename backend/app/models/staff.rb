@@ -1,4 +1,5 @@
 class Staff < ApplicationRecord
+  has_many :assessment_sessions, dependent: :destroy
   validates :email, presence: true, uniqueness: { case_sensitive: false }
   validates_format_of :email, with: URI::MailTo::EMAIL_REGEXP, if: -> { email.present? }
 
