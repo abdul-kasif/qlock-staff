@@ -1,3 +1,5 @@
+// src/hooks/useAuth.js
+
 import { useState } from "react";
 import api from "@/lib/api";
 
@@ -8,7 +10,6 @@ export function useAuth() {
     setIsLoading(true);
     try {
       const response = await api.post("/auth/send_otp", { email });
-      console.log("OTP Sent:", response.data);
       setIsLoading(false);
       return true;
     } catch (error) {
@@ -23,8 +24,6 @@ export function useAuth() {
     try {
       const response = await api.post("/auth/verify_otp", { email, code });
       const { token, is_new_staff, staff_id } = response.data;
-      localStorage.setItem("token", token);
-      localStorage.setItem("staff_id", staff_id);
       setIsLoading(false);
       return {
         success: true,
@@ -41,9 +40,21 @@ export function useAuth() {
     }
   };
 
+  // 👇 NEW: Fetch full user data after login
+  const fetchUser = async (token) => {
+    try {
+      const response = await api.get("/dashboard");
+      return response.data.user; // contains profile_complete, name, etc.
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+      throw error;
+    }
+  };
+
   return {
     sendOtp,
     verifyOtp,
+    fetchUser, // 👈 expose it
     isLoading,
   };
 }
