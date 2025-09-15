@@ -1,21 +1,26 @@
 // src/pages/ProfilePage.jsx
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "@/context/AuthContext";
+import { Toaster } from "sonner";
+import ProfileForm from "@/components/profile/ProfileForm";
 
 export default function ProfilePage() {
+  const { user, token, loading } = useAuthContext();
+  const navigate = useNavigate();
+
+  // 👇 Redirect if profile is already complete
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading...
+      </div>
+    );
+  }
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">
-            Complete Your Profile
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-center text-muted-foreground">
-            Profile form coming next...
-          </p>
-        </CardContent>
-      </Card>
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-background">
+      <Toaster position="top-center" richColors />
+      <ProfileForm />
     </div>
   );
 }
