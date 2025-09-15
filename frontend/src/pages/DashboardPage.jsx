@@ -1,34 +1,56 @@
 // src/pages/DashboardPage.jsx
-import { Button } from "@/components/ui/button";
-import { useAuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useAuthContext } from "@/context/AuthContext";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import StaffInfoCard from "@/components/dashboard/StaffInfoCard";
+import SessionForm from "@/components/dashboard/SessionForm";
+import SessionTable from "@/components/dashboard/SessionTable";
+import { useCallback } from "react";
+import { Toaster } from "sonner";
+import { useSessions } from "@/hooks/useSessions";
 
 export default function DashboardPage() {
-  const { user, logout } = useAuthContext();
-  const navigate = useNavigate();
+  const { user, token } = useAuthContext();
+  const { fetchCurrentSessions } = useSessions();
+  const [activeSessions, setActiveSessions] = useState([]);
+  const [historySessions, setHistorySessions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/", { replace: true });
-  };
+  const fetchSessions = useCallback(async () => {
+    if (!token) return;
+    setLoading(true);
+    try {
+      const data = await fetchCurrentSessions();
+      setActiveSessions(data.active_sessions || []);
+      setHistorySessions(data.history_sessions || []);
+      setLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch sessions:", error);
+      setLoading(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    fetchSessions();
+  }, [token]);
 
   return (
-    <div className="p-6 space-y-6">
-      <header className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">QLock Staff Portal</h1>
-        <Button variant="ghost" onClick={handleLogout}>
-          Logout
-        </Button>
-      </header>
-
-      <div className="bg-card p-4 rounded-lg border">
-        <h2 className="text-lg font-semibold">Welcome, {user?.name || "Staff"}</h2>
-        <p className="text-sm text-muted-foreground">ID: {user?.staff_personal_id}</p>
-        <p className="text-sm text-muted-foreground">Dept: {user?.department}</p>
-        <p className="text-sm text-muted-foreground">Email: {user?.email}</p>
-      </div>
-
-      <div>DASHBOARD CONTENT COMING NEXT...</div>
+    <div className="min-h-screen bg-background pb-8">
+      <Toaster position="top-center" richColors />
+      <DashboardHeader />
+      <main className="max-w-6xl mx-auto p-4 pt-28">
+        {" "}
+        {/* pt-28 to offset fixed header */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <StaffInfoCard user={user} />
+          <SessionForm fetchSessions={fetchSessions} />
+        </div>
+        <SessionTable
+          activeSessions={activeSessions}
+          historySessions={historySessions}
+          fetchSessions={fetchSessions}
+        />
+      </main>
     </div>
   );
 }
