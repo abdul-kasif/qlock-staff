@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   resources :sessions, controller: "assessment_session", only: [:create, :show] do
     member do
       patch :stop
+      delete :delete
     end
     collection do
       get :active

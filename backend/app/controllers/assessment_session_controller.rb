@@ -70,10 +70,25 @@ class AssessmentSessionController < ApplicationController
     sessions = current_staff.assessment_sessions.status_completed.order(started_at: :desc)
     render json: {
       sessions: sessions.as_json(only: [:id, :title, :google_form_url, :test_duration_minutes, :started_at, :ended_at])
-    },status: :ok 
+    }, status: :ok 
   rescue StandardError => e
     Rails.logger.error "Failed to fetch active sessions #{e.message}"
     render json: { error: "Failed to fetch active sessions #{e.message}"}, status: :unprocessable_content
+  end
+
+  def delete
+    session = current_staff.assessment_sessions.status_completed.find_by(id: params[:id])
+    if session.nil?
+      render json: { error: "Session not found" }, status: :not_found
+      return
+    end
+    session.destroy
+    render json: {
+      message: "Session deleted successfully"
+    }, status: :ok
+  rescue StandardError => e
+    Rails.logger.error "Failed to delete session #{e.message}"
+    render json: { error: "Failed to delete session #{e.message}" }, status: :unprocessable_content
   end
 
   private
