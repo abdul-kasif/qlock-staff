@@ -9,7 +9,7 @@ class DashboardController < ApplicationController
       user: {
         staff_id: staff.id,
         name: staff.name,
-        emall: staff.email,
+        email: staff.email,
         staff_personal_id: staff.staff_personal_id,
         department: staff.department,
         profile_complete: staff.profile_complete
