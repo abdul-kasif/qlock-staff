@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSessions } from "@/hooks/useSessions";
-import { toast } from "sonner";
 
 const sessionSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -38,12 +37,7 @@ export default function SessionForm({ fetchSessions }) {
 
   const onSubmit = async (data) => {
     const success = await createSession(data, fetchSessions);;
-    if (success) {
-      form.reset();
-      toast.success("Session started successfully!");
-    } else {
-      toast.error("Failed to start session");
-    }
+    if (success) form.reset()
   };
 
   return (
@@ -61,7 +55,7 @@ export default function SessionForm({ fetchSessions }) {
                 <FormItem>
                   <FormLabel>Session Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Math Quiz Test - 3" {...field} />
+                    <Input placeholder="e.g. First Internal Quiz" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
