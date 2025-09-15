@@ -37,6 +37,7 @@ export function useSessions() {
       return false;
     }
   };
+
   // Fetch full user data includes sessions
   const fetchCurrentSessions = async (token) => {
     try {
@@ -48,9 +49,27 @@ export function useSessions() {
     }
   };
 
+  // Delete selected previous session
+  const deleteSession = async (id, onSuccess) => {
+    setIsLoading(true);
+    try {
+      await api.delete(`/sessions/${id}/delete`);
+      toast.success("Session deleted successfully");
+      if (onSuccess && typeof onSuccess === "function") onSuccess();
+      setIsLoading(false);
+      return true;
+    } catch (error) {
+      console.error("Delete session error:", error);
+      toast.error("Failed to delete session");
+      setIsLoading(false);
+      return false;
+    }
+  };
+
   return {
     createSession,
     stopSession,
+    deleteSession,
     fetchCurrentSessions,
     isLoading,
   };

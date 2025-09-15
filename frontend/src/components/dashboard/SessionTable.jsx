@@ -11,22 +11,28 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSessions } from "@/hooks/useSessions";
-import { toast } from "sonner";
 import { useState } from "react";
+import { Trash2, Power } from "lucide-react";
 
-export default function SessionTable({ activeSessions, historySessions, fetchSessions }) {
-  const { stopSession, isLoading } = useSessions();
+export default function SessionTable({
+  activeSessions,
+  historySessions,
+  fetchSessions,
+}) {
+  const { stopSession, deleteSession, isLoading } = useSessions();
   const [activeTab, setActiveTab] = useState("active");
 
   const handleStopSession = async (id) => {
-    const success = await stopSession(id, fetchSessions);
-    if (success) {
-      toast.success("Session ended successfully");
-    } else {
-      toast.error("Failed to end session");
-    }
+    if (isLoading) return;
+
+    await stopSession(id, fetchSessions);
   };
 
+  const handleDeleteSession = async (id) => {
+    if (isLoading) return;
+
+    await deleteSession(id, fetchSessions);
+  };
   const EmptyState = ({ message }) => (
     <div className="py-8 text-center text-muted-foreground">
       <p>{message}</p>
@@ -74,11 +80,12 @@ export default function SessionTable({ activeSessions, historySessions, fetchSes
                       <TableCell>
                         <Button
                           size="sm"
-                          variant="destructive"
+                          variant="ghost"
                           onClick={() => handleStopSession(session.id)}
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
                           disabled={isLoading}
                         >
-                          End Session
+                          <Power className="h-4 w-4" />
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -100,6 +107,7 @@ export default function SessionTable({ activeSessions, historySessions, fetchSes
                     <TableHead>Duration</TableHead>
                     <TableHead>Started</TableHead>
                     <TableHead>Ended</TableHead>
+                    <TableHead className="w-[80px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -114,6 +122,17 @@ export default function SessionTable({ activeSessions, historySessions, fetchSes
                         {session.ended_at
                           ? new Date(session.ended_at).toLocaleString()
                           : "—"}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => handleDeleteSession(session.id)}
+                          disabled={isLoading}
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
