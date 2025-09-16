@@ -1,10 +1,23 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  # Auth routes
+  post "auth/send_otp", to: "auth#send_otp" # AuthController -> send_otp method
+  post "auth/verify_otp", to: "auth#verify_otp" # AuthController -> verify_otp method
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
+  # Profile Creation routes
+  post "/profile", to: "profile#create"
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  # Dashboard routes
+  get "/dashboard", to: "dashboard#show"
+
+  # Assessment session routes
+  resources :sessions, controller: "assessment_session", only: [:create, :show] do
+    member do
+      patch :stop
+      delete :delete
+    end
+    collection do
+      get :active
+      get :history
+    end
+  end
 end
