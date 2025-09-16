@@ -59,8 +59,15 @@ export function useSessions() {
       setIsLoading(false);
       return true;
     } catch (error) {
-      console.error("Delete session error:", error);
-      toast.error("Failed to delete session");
+      if (error.status == 400) {
+        console.error("Delete session error:", error);
+        toast.error(
+          "Cannot delete session: it contains student submissions"
+        );
+      } else {
+        console.error("Delete session error:", error);
+        toast.error("Failed to delete session");
+      }
       setIsLoading(false);
       return false;
     }
