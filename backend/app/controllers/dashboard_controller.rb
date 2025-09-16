@@ -12,7 +12,8 @@ class DashboardController < ApplicationController
           department: current_user.department,
           role: current_user.role,
           profile_complete: current_user.profile_complete 
-        }
+        },
+        taken_tests: taken_tests
       }, status: :ok
     else
       render json: {
@@ -44,5 +45,17 @@ class DashboardController < ApplicationController
   # Fetch all completed asssessment sessions
   def history_sessions
     current_user.assessment_sessions.status_completed.order(started_at: :desc)
+  end
+
+  # Fetch all test taken history (student)
+  def taken_tests
+    current_user.test_submissions.includes(:assessment_session).map do |ts|
+      {
+        title: ts.assessment_session.title,
+        started_at: ts.started_at,
+        submitted_at: ts.submitted_at,
+        status: ts.status
+      }
+    end
   end
 end
