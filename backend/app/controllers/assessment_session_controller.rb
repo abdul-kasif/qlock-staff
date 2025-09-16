@@ -4,7 +4,10 @@ class AssessmentSessionController < ApplicationController
 
   # Create a new assessment session
   def create
-    session = current_staff.assessment_sessions.create!(
+    unless current_user.role_staff?
+      return render json: { error: "Access denied, Staff only"}, status: :forbidden
+    end
+    session = current_user.assessment_sessions.create!(
       title: session_params[:title],
       google_form_url: session_params[:google_form_url],
       test_duration_minutes: session_params[:test_duration_minutes],
@@ -32,7 +35,10 @@ class AssessmentSessionController < ApplicationController
 
   # Stop an active assessment session
   def stop
-    session = current_staff.assessment_sessions.status_active.find(params[:id])
+    unless current_user.role_staff?
+      return render json: { error: "Access Denied, Staff only" }, status: :forbidden
+    end
+    session = current_user.assessment_sessions.status_active.find(params[:id])
 
     session.update!(
       status: :completed,
@@ -56,7 +62,7 @@ class AssessmentSessionController < ApplicationController
 
   # Fetch all active assessment sessions
   def active
-    sessions = current_staff.assessment_sessions.status_active.order(started_at: :desc)
+    sessions = current_user.assessment_sessions.status_active.order(started_at: :desc)
     render json: {
       sessions: sessions.as_json(only: [:id, :title, :google_form_url, :access_code, :test_duration_minutes, :started_at])
     }, status: :ok
@@ -67,7 +73,7 @@ class AssessmentSessionController < ApplicationController
 
   # Fetch all completed assessment sessions
   def history
-    sessions = current_staff.assessment_sessions.status_completed.order(started_at: :desc)
+    sessions = current_user.assessment_sessions.status_completed.order(started_at: :desc)
     render json: {
       sessions: sessions.as_json(only: [:id, :title, :google_form_url, :test_duration_minutes, :started_at, :ended_at])
     }, status: :ok 
@@ -77,7 +83,10 @@ class AssessmentSessionController < ApplicationController
   end
 
   def delete
-    session = current_staff.assessment_sessions.status_completed.find_by(id: params[:id])
+    unless current_user.role_staff?
+      return render json: { error: "Access Denied, Staff only" }, status: :forbidden 
+    end
+    session = current_user.assessment_sessions.status_completed.find_by(id: params[:id])
     if session.nil?
       render json: { error: "Session not found" }, status: :not_found
       return
