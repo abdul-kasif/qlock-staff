@@ -1,5 +1,5 @@
 class AssessmentSession < ApplicationRecord
-  belongs_to :staff
+  belongs_to :user
 
   # Enum for session status
   enum :status, { active: 0, completed: 1}, prefix: true

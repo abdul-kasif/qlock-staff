@@ -1,7 +1,7 @@
 class AuthController < ApplicationController
   def send_otp
     email = params.require(:email).downcase.strip
-    
+
     # Check email is empty
     if email.blank?
       return render json: { error: "Email is required"}, status: :bad_request
@@ -31,6 +31,7 @@ class AuthController < ApplicationController
 
   def verify_otp
     email = params.require(:email).downcase.strip
+    role = params.require(:role)
     input_otp = params.require(:code)
 
     # Check Email and OTP are empty
@@ -53,22 +54,23 @@ class AuthController < ApplicationController
 
     # Check the input OTP is vaild or not
     if otp.otp_valid?(input_otp)
-      staff = Staff.find_by(email: email) # check whether the user exist and profile is complete
+      user = User.find_by(email: email) # check whether the user exist and profile is complete
 
-      if staff.nil?
-        staff = Staff.create!(email: email, profile_complete: false)
-        is_new_staff = true
+      if user.nil?
+        user = User.create!(email: email, profile_complete: false, role: role)
+        is_new_user = true
       else
-        is_new_staff = !staff.profile_complete
+        is_new_user = !user.profile_complete
       end
 
       # Establish session
-      token = JwtService.encode(staff_id: staff.id)
+      token = JwtService.encode(user_id: user.id)
 
       render json: {
         message: "OTP verified successfully",
-        is_new_staff: is_new_staff,
-        staff_id: staff.id,
+        is_new_user: is_new_user,
+        user_id: user.id,
+        role: user.role,
         token: token # JWT Token , store this in frontend locally
       }, status: :ok
 
