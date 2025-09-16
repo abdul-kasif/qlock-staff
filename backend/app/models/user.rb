@@ -1,10 +1,14 @@
-class Staff < ApplicationRecord
+class User < ApplicationRecord
   has_many :assessment_sessions, dependent: :destroy
+
+  enum :role, { staff: "staff", student: "student" }, prefix: true
+
   validates :email, presence: true, uniqueness: { case_sensitive: false }
   validates_format_of :email, with: URI::MailTo::EMAIL_REGEXP, if: -> { email.present? }
+  validates :role, presence: true
 
   # Profile validations
-  validates :staff_personal_id, presence: true, if: :profile_complete
+  validates :user_personal_id, presence: true, if: :profile_complete
   validates :name, presence: true, if: :profile_complete
   validates :department, presence: true, if: :profile_complete
 

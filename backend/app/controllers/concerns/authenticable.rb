@@ -8,12 +8,11 @@ module Authenticable
     if token.blank?
       return render json: { error: "Missing token"}, status: :unauthorized
     end
-
     begin
       payload = JwtService.decode(token)
-      @current_staff = Staff.find_by(id: payload[:staff_id])
+      @current_user = User.find_by(id: payload[:user_id])
 
-      if @current_staff.nil?
+      if @current_user.nil?
         return render json: { error: "Invalid token"}, status: :unauthorized
       end
     rescue StandardError => e
@@ -22,7 +21,7 @@ module Authenticable
     end
   end
 
-  def current_staff
-    @current_staff
+  def current_user
+    @current_user
   end
 end
