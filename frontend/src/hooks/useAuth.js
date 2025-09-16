@@ -19,16 +19,16 @@ export function useAuth() {
     }
   };
 
-  const verifyOtp = async (email, code) => {
+  const verifyOtp = async (email, code, role) => {
     setIsLoading(true);
     try {
-      const response = await api.post("/auth/verify_otp", { email, code });
-      const { token, is_new_staff, staff_id } = response.data;
+      const response = await api.post("/auth/verify_otp", { email, code , role});
+      const { token, is_new_user, user_id } = response.data;
       setIsLoading(false);
       return {
         success: true,
-        is_new_staff,
-        staff_id,
+        is_new_user,
+        user_id,
         token,
       };
     } catch (error) {

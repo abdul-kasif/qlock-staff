@@ -2,7 +2,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/context/AuthContext";
 import LoginCard from "@/components/auth/LoginCard";
-import api from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
 
 

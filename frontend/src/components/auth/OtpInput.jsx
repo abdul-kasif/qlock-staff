@@ -8,6 +8,7 @@ export default function OtpInput({ email, onVerifySuccess }) {
   const { verifyOtp, isLoading } = useAuth();
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
+  const role = import.meta.env.VITE_USER_ROLE;
 
   const handleVerify = async () => {
     if (otp.length !== 6) {
@@ -15,8 +16,10 @@ export default function OtpInput({ email, onVerifySuccess }) {
       return;
     }
 
+    console.log("role:", role)
+
     setError("");
-    const result = await verifyOtp(email, otp);
+    const result = await verifyOtp(email, otp, role);
     if (result.success) {
       toast.success("OTP verified!");
       onVerifySuccess(result);
@@ -29,11 +32,11 @@ export default function OtpInput({ email, onVerifySuccess }) {
     <div className="space-y-4">
       <div className="space-y-2">
         <label htmlFor="otp" className="text-sm font-medium">
-          Enter OTP sent to <span className="font-bold">{email}</span>
+          Enter 6-digit OTP sent to <span className="font-bold">{email}</span>
         </label>
         <Input
           id="otp"
-          placeholder="A1B2C3"
+          placeholder="XXXXXX"
           value={otp}
           onChange={(e) => setOtp(e.target.value.toUpperCase())}
           maxLength={6}
@@ -43,7 +46,7 @@ export default function OtpInput({ email, onVerifySuccess }) {
         {error && <p className="text-sm text-destructive">{error}</p>}
       </div>
       <Button onClick={handleVerify} disabled={isLoading} className="w-full">
-        {isLoading ? "Verifying..." : "Verify OTP"}
+         Verify OTP
       </Button>
     </div>
   );

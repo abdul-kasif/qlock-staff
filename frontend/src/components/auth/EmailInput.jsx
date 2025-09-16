@@ -35,7 +35,7 @@ export default function EmailInput({ onOtpSent, email, setEmail }) {
         <Input
           id="email"
           type="email"
-          placeholder="staff@college.edu"
+          placeholder="staff@tcarts.in"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={isLoading}
