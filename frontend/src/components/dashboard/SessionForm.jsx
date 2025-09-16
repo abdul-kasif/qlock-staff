@@ -102,7 +102,7 @@ export default function SessionForm({ fetchSessions }) {
             />
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Starting..." : "Start Session"}
+              Start Session
             </Button>
           </form>
         </Form>

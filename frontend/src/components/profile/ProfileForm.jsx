@@ -26,7 +26,7 @@ import { useAuthContext } from "@/context/AuthContext";
 
 // Zod Schema
 const profileSchema = z.object({
-  staff_personal_id: z.string().min(1, "Staff ID is required"),
+  user_personal_id: z.string().min(1, "User ID is required"),
   name: z.string().min(1, "Name is required"),
   department: z.string().min(1, "Department is required"),
 });
@@ -39,7 +39,7 @@ export default function ProfileForm() {
   const form = useForm({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      staff_personal_id: "",
+      user_personal_id: "",
       name: "",
       department: "",
     },
@@ -70,10 +70,10 @@ export default function ProfileForm() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
-              name="staff_personal_id"
+              name="user_personal_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Staff Personal ID</FormLabel>
+                  <FormLabel>User Personal ID</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g. S123" {...field} />
                   </FormControl>
@@ -127,7 +127,7 @@ export default function ProfileForm() {
             />
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save & Continue to Dashboard"}
+              Save & Continue to Dashboard
             </Button>
           </form>
         </Form>

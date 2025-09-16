@@ -10,7 +10,7 @@ export default function StaffInfoCard({ user }) {
       <CardContent className="text-sm">
         <div>
           <span className="text-muted-foreground">Roll No</span>
-          <p className="font-medium">{user.staff_personal_id || "—"} </p>
+          <p className="font-medium">{user.user_personal_id || "—"} </p>
         </div>
         <div className="mt-6">
           <span className="text-muted-foreground">Name</span>
