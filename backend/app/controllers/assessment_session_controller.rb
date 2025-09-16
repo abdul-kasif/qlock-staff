@@ -95,6 +95,9 @@ class AssessmentSessionController < ApplicationController
     render json: {
       message: "Session deleted successfully"
     }, status: :ok
+  rescue ActiveRecord::InvalidForeignKey => e
+    Rails.logger.error "Foreign key violation while deleting session #{e.message}"
+    render json: { error: "Cannot delete session: it is referenced by submissions" }, status: :bad_request
   rescue StandardError => e
     Rails.logger.error "Failed to delete session #{e.message}"
     render json: { error: "Failed to delete session #{e.message}" }, status: :unprocessable_content
