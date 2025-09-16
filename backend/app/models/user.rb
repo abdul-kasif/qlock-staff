@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   has_many :assessment_sessions, dependent: :destroy
+  has_many :test_submissions, dependent: :destroy
 
   enum :role, { staff: "staff", student: "student" }, prefix: true
 

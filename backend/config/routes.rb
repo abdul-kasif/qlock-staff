@@ -20,4 +20,8 @@ Rails.application.routes.draw do
       get :history
     end
   end
+
+  # Test Sessions Routes
+  post "test_sessions/start", to: "test_sessions#start"
+  post "test_sessions/submit", to: "test_sessions#submit"
 end
