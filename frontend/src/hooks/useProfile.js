@@ -14,7 +14,7 @@ export function useProfile() {
       setIsLoading(false);
       return { success: true, user: response.data.user };
     } catch (error) {
-      const message = error.response?.data?.error || "Failed to save profile";
+      const message = "Failed to save profile, Please check your details";
       toast.error(message);
       setIsLoading(false);
       return { success: false, message };

@@ -5,9 +5,9 @@ import { useAuthContext } from "@/context/AuthContext";
 export default function AlreadyLoggedInRedirect({ children }) {
   const { user, token, loading } = useAuthContext();
 
-  // While loading — show nothing (or a tiny spinner if you prefer)
+  // While loading — show nothing
   if (loading) {
-    return null; // or <div className="sr-only">Loading...</div>
+    return null;
   }
 
   // If logged in AND profile complete → redirect to dashboard
