@@ -38,6 +38,9 @@ gem "letter_opener", group: :development
 # Use JWT for Jwt token authenticaiton
 gem "jwt"
 
+# Use Active model serializer for clean and consisteent JSON
+gem 'active_model_serializers'
+
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
