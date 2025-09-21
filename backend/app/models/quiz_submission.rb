@@ -10,7 +10,7 @@ class QuizSubmission < ApplicationRecord
 
   # Submit answers + auto-grade
   def submit_answers!(answer_params)
-    raise "Quiz already submitted" if submitted?
+    raise "Quiz already submitted" if status_submitted?
 
     # Use transaction — all or nothing
     transaction do
