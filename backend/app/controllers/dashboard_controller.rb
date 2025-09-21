@@ -10,6 +10,7 @@ class DashboardController < ApplicationController
           user_personal_id: current_user.user_personal_id,
           name: current_user.name,
           department: current_user.department,
+          email: current_user.email,
           role: current_user.role,
           profile_complete: current_user.profile_complete 
         },

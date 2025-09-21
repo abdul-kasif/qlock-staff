@@ -11,6 +11,7 @@ class TestSessionsController < ApplicationController
     result = TestSubmission.start_for_user(current_user, access_code)
   
     render json: {
+      message: "Session started successfully.",
       valid: true,
       session: session_data(result[:session]),
       can_resume: result[:can_resume]
