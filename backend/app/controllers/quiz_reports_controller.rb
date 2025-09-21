@@ -18,7 +18,7 @@ class QuizReportsController < ApplicationController
       submissions: submissions.map do |sub|
         {
           id: sub.id,
-          student_name: sub.user.name, # assumes you have `name` on User
+          student_name: sub.user.name,
           started_at: sub.started_at,
           submitted_at: sub.submitted_at,
           status: sub.status,

@@ -1,9 +1,8 @@
-# app/controllers/api/v1/quiz_submissions_controller.rb
 class QuizSubmissionsController < ApplicationController
   include Authenticable
   before_action :authenticate_user!
 
-  # ➤ POST /api/v1/quiz_submissions
+  # ➤ POST /quiz_submissions
   def create
     unless current_user.role_student?
       return render json: { error: "Access denied, Stundents only"}, status: :forbidden
