@@ -1,4 +1,3 @@
-# app/controllers/api/v1/student_quizzes_controller.rb
 class StudentQuizzesController < ApplicationController
   include Authenticable
   before_action :authenticate_user!

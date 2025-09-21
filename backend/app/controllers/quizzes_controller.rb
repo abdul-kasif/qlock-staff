@@ -4,7 +4,7 @@ class QuizzesController < ApplicationController
   before_action :authenticate_user!
   before_action :ensure_staff, only: [:create, :update, :stop]
 
-  # ➤ POST /api/v1/quizzes
+  # ➤ POST /quizzes
   def create
     service = QuizCreationService.new(current_user, quiz_params)
 
@@ -28,7 +28,7 @@ class QuizzesController < ApplicationController
   end
 
 
-  # ➤ PATCH /api/v1/quizzes/:id
+  # ➤ PATCH /quizzes/:id
   def update
     @quiz = current_user.quizzes.find(params[:id])
 
@@ -39,7 +39,7 @@ class QuizzesController < ApplicationController
     end
   end
 
-  # ➤ PATCH /api/v1/quizzes/:id/stop
+  # ➤ PATCH /quizzes/:id/stop
   def stop
     @quiz = current_user.quizzes.find(params[:id])
     if @quiz.stop!
@@ -52,7 +52,7 @@ class QuizzesController < ApplicationController
     render json: { error: "Failed to stop the quiz"}, status: :unprocessable_content
   end
 
-  # ➤ GET /api/v1/quizzes (for staff dashboard)
+  # ➤ GET /quizzes (for staff dashboard)
   def index
     @quizzes = current_user.quizzes.order(created_at: :desc)
     render json: @quizzes
