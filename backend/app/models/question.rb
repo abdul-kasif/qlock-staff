@@ -2,7 +2,9 @@ class Question < ApplicationRecord
   belongs_to :quiz
   has_many :options, dependent: :destroy
 
-  validates :test, presence: true
+  accepts_nested_attributes_for :options, allow_destroy: false
+  
+  validates :text, presence: true
   validates :order, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validate :unique_order_within_quiz
 
