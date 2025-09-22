@@ -22,7 +22,7 @@ export function useQuizzes() {
     }
   };
 
-    const fetchAllQuizzes = async (token) => {
+  const fetchAllQuizzes = async (token) => {
     try {
       const response = await api.get("/dashboard");
       return response.data;
@@ -32,10 +32,26 @@ export function useQuizzes() {
     }
   };
 
+  const createQuiz = async (quizData) => {
+    setIsLoading(true);
+    try {
+      await api.post("/quizzes", { quiz: quizData });
+      toast.success("Quiz created successfully!");
+      setIsLoading(false);
+      return true;
+    } catch (error) {
+      console.error("Create quiz error:", error);
+      toast.error("Failed to create quiz");
+      setIsLoading(false);
+      return false;
+    }
+  };
+
 
   return {
     endQuiz,
     fetchAllQuizzes,
+    createQuiz,
     isLoading,
   };
 }
