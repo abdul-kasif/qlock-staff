@@ -1,4 +1,3 @@
-// src/components/dashboard/DashboardHeader.jsx
 import { Button } from "@/components/ui/button";
 import { useAuthContext } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
