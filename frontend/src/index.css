@@ -110,6 +110,15 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+@keyframes gentle-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+.animate-gentle-bounce {
+  animation: gentle-bounce 0.6s ease-in-out;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
