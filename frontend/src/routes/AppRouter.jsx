@@ -1,16 +1,17 @@
-// src/routes/AppRouter.jsx
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "@/pages/LoginPage";
 import ProfilePage from "@/pages/ProfilePage";
 import DashboardPage from "@/pages/DashboardPage";
 import ProtectedRoute from "./ProtectedRoute";
 import AlreadyLoggedInRedirect from "./AlreadyLoggedInRedirect"; // 👈 new import
+import QuizBuilderPage from "@/pages/QuizBuilderPage";
+import QuizReportPage from "@/pages/QuizReportPage";
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* 👇 Redirect away if already logged in + profile complete */}
+        {/* Redirect away if already logged in + profile complete */}
         <Route
           path="/"
           element={
@@ -20,7 +21,7 @@ export default function AppRouter() {
           }
         />
 
-        {/* 👇 Same for /profile — if profile_complete, redirect to dashboard */}
+        {/* Same for /profile — if profile_complete, redirect to dashboard */}
         <Route
           path="/profile"
           element={
@@ -32,12 +33,30 @@ export default function AppRouter() {
           }
         />
 
-        {/* 👇 Only accessible if logged in + profile complete */}
+        {/* Only accessible if logged in + profile complete */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute requireProfile={true}>
               <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/quiz-builder"
+          element={
+            <ProtectedRoute requireProfile={true}>
+              <QuizBuilderPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/quiz-reports/:id"
+          element={
+            <ProtectedRoute requireProfile={true}>
+              <QuizReportPage />
             </ProtectedRoute>
           }
         />

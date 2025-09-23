@@ -9,19 +9,19 @@ Rails.application.routes.draw do
   # Dashboard routes
   get "/dashboard", to: "dashboard#show"
 
-  # Assessment session routes
-  resources :sessions, controller: "assessment_session", only: [:create, :show] do
+  # Staff quix management routes
+  resources :quizzes, only: [:create, :update, :index] do
     member do
       patch :stop
-      delete :delete
-    end
-    collection do
-      get :active
-      get :history
     end
   end
 
-  # Test Sessions Routes
-  post "test_sessions/start", to: "test_sessions#start"
-  post "test_sessions/submit", to: "test_sessions#submit"
+  # Student Quiz Access
+  get '/student_quizzes/access/:access_code', to: 'student_quizzes#show', as: 'student_quiz_access'
+
+  # Student Quiz Submission
+  post '/quiz_submissions', to: 'quiz_submissions#create'
+
+  # Staff Quiz Reports
+  get '/quiz_reports/:quiz_id', to: 'quiz_reports#show', as: 'quiz_report'
 end
