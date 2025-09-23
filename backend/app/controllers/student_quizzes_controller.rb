@@ -8,8 +8,13 @@ class StudentQuizzesController < ApplicationController
       return render json: { error: "Access denied, Stundents only"}, status: :forbidden
     end
 
+
     @quiz = Quiz.status_active.find_by!(access_code: params[:access_code])
 
+    if current_user.quiz_submissions.find_by(user_id: current_user, quiz_id: @quiz.id).status_submitted?
+      return render json: { error: "Already submitted" }, status: :unprocessable_content
+    end
+    
     render json: {
       quiz: {
         id: @quiz.id,
