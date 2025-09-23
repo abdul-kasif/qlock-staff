@@ -1,4 +1,4 @@
-// src/components/dashboard/QuizTable.jsx
+import { useNavigate } from "react-router-dom";
 import {
     Tabs,
     TabsContent,
@@ -30,6 +30,7 @@ const EmptyState = ({ message, icon: Icon }) => (
 export default function QuizTable({ activeQuizzes, completedQuizzes, onQuizAction }) {
     const { endQuiz, isLoading } = useQuizzes();
     const [activeTab, setActiveTab] = useState("active");
+    const navigate = useNavigate()
 
     const handleEndQuiz = async (id) => {
         if (isLoading) return;
@@ -42,9 +43,9 @@ export default function QuizTable({ activeQuizzes, completedQuizzes, onQuizActio
     };
 
     const handleViewReport = (id) => {
-        // Later: navigate(`/quiz-reports/${id}`);
-        toast.info("Report view coming soon");
-    };
+        navigate(`/quiz-reports/${id}`);
+        console.log(`/quiz-reports/${id}`)
+     };
 
     return (
         <Card>

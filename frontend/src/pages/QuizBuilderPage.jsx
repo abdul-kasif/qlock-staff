@@ -6,6 +6,7 @@ import QuestionList from "@/components/quiz-builder/QuestionList";
 import SaveQuizButton from "@/components/quiz-builder/SaveQuizButton";
 import { useLocalStorageDraft } from "@/hooks/useLocalStorageDraft";
 import { useQuizzes } from "@/hooks/useQuizzes";
+import { toast } from "sonner";
 
 export default function QuizBuilderPage() {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ export default function QuizBuilderPage() {
     // Validate: at least 1 question, each with 4 options + 1 correct
     const isValid = validateQuiz(draft);
     if (!isValid) {
-      alert("Please complete all questions and mark correct answers.");
+      toast.error("Please complete all questions and mark correct answer.");
       return;
     }
 

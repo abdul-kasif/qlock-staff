@@ -14,6 +14,11 @@ class QuizReportsController < ApplicationController
 
     render json: {
       quiz_title: quiz.title,
+      subject_code: quiz.subject_code,
+      subject_name: quiz.subject_name,
+      degree: quiz.degree,
+      semester: quiz.semester,
+      time_limit_minutes: quiz.time_limit_minutes,
       total_students: submissions.count,
       submissions: submissions.map do |sub|
         {

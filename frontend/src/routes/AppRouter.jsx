@@ -5,6 +5,7 @@ import DashboardPage from "@/pages/DashboardPage";
 import ProtectedRoute from "./ProtectedRoute";
 import AlreadyLoggedInRedirect from "./AlreadyLoggedInRedirect"; // 👈 new import
 import QuizBuilderPage from "@/pages/QuizBuilderPage";
+import QuizReportPage from "@/pages/QuizReportPage";
 
 export default function AppRouter() {
   return (
@@ -47,6 +48,15 @@ export default function AppRouter() {
           element={
             <ProtectedRoute requireProfile={true}>
               <QuizBuilderPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/quiz-reports/:id"
+          element={
+            <ProtectedRoute requireProfile={true}>
+              <QuizReportPage />
             </ProtectedRoute>
           }
         />
