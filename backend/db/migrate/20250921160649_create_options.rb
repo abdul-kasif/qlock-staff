@@ -9,6 +9,6 @@ class CreateOptions < ActiveRecord::Migration[7.0]
 
       t.timestamps
     end
-    add_index :options, [:question_id, :order], unique: true # ← Enforce unique order per question
+    add_index :options, [ :question_id, :order ], unique: true # ← Enforce unique order per question
   end
 end

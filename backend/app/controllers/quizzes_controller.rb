@@ -2,7 +2,7 @@
 class QuizzesController < ApplicationController
   include Authenticable
   before_action :authenticate_user!
-  before_action :ensure_staff, only: [:create, :update, :stop]
+  before_action :ensure_staff, only: [ :create, :update, :stop ]
 
   # ➤ POST /quizzes
   def create
@@ -12,13 +12,13 @@ class QuizzesController < ApplicationController
       render json: quiz.as_json(
         include: {
           questions: {
-            only: [:id, :text, :order],
+            only: [ :id, :text, :order ],
             include: {
-              options: { only: [:id, :text, :is_correct, :order] }
+              options: { only: [ :id, :text, :is_correct, :order ] }
             }
           }
         },
-        except: [:user_id]
+        except: [ :user_id ]
       ), status: :created
     else
       render json: { errors: service.quiz.errors }, status: :unprocessable_entity
@@ -49,7 +49,7 @@ class QuizzesController < ApplicationController
     end
   rescue StandardError => e
     Rails.logger.error "Failed to stop the quiz #{e.message}"
-    render json: { error: "Failed to stop the quiz"}, status: :unprocessable_content
+    render json: { error: "Failed to stop the quiz" }, status: :unprocessable_content
   end
 
   # ➤ GET /quizzes (for staff dashboard)
@@ -66,7 +66,7 @@ class QuizzesController < ApplicationController
       :time_limit_minutes, :started_at, :ended_at,
       questions: [
         :text,
-        options: [:text, :is_correct]
+        options: [ :text, :is_correct ]
       ]
     )
     Rails.logger.info "PERMITTED QUIZ PARAMS: #{permitted.inspect}"
@@ -76,7 +76,7 @@ class QuizzesController < ApplicationController
   def ensure_staff
     unless current_user.role_staff?
       render json: { error: "Access denied. Staff only." }, status: :forbidden
-      return false
+      false
     end
   end
 end

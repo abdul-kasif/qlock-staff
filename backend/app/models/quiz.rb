@@ -4,8 +4,8 @@ class Quiz < ApplicationRecord
     has_many :quiz_submissions, dependent: :destroy
 
     accepts_nested_attributes_for :questions, allow_destroy: false
-    
-    enum :status, { active: 0, completed: 1}, prefix: true
+
+    enum :status, { active: 0, completed: 1 }, prefix: true
 
     validates :title, presence: true
     validates :access_code, presence: true
@@ -45,4 +45,3 @@ class Quiz < ApplicationRecord
       update!(ended_at: Time.current, status: :completed)
     end
 end
-

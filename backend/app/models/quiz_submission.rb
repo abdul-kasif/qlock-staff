@@ -4,7 +4,7 @@ class QuizSubmission < ApplicationRecord
   belongs_to :quiz
   has_many :answers, dependent: :destroy
 
-  enum :status, { started: 'started', submitted: 'submitted' }, prefix: true
+  enum :status, { started: "started", submitted: "submitted" }, prefix: true
 
   validates :user_id, uniqueness: { scope: :quiz_id } # One submission per student per quiz
 

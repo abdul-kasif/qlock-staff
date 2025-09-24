@@ -11,6 +11,6 @@ class CreateQuizSubmissions < ActiveRecord::Migration[8.0]
 
       t.timestamps
     end
-    add_index :quiz_submissions, [:user_id, :quiz_id], unique: true # ← One submission per student per quiz
+    add_index :quiz_submissions, [ :user_id, :quiz_id ], unique: true # ← One submission per student per quiz
   end
 end

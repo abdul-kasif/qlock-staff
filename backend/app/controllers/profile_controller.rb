@@ -30,19 +30,19 @@ class ProfileController < ApplicationController
 
   rescue StandardError => e
     Rails.logger.error "Profile Setup Error #{e.message}"
-    render json: { error: "Failed to update profile #{e.message}"}, status: :unprocessable_content
+    render json: { error: "Failed to update profile #{e.message}" }, status: :unprocessable_content
   end
 
   private
-  
+
   def profile_params
     params.require(:profile).permit(:user_personal_id, :name, :department)
   end
 
   def ensure_profile_incomplete
     unless current_user&.profile_complete == false
-      render json: { error: "Profile is already complete"}, status: :forbidden
-      return false
+      render json: { error: "Profile is already complete" }, status: :forbidden
+      false
     end
   end
 end
