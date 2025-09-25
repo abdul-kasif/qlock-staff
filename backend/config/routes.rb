@@ -10,18 +10,18 @@ Rails.application.routes.draw do
   get "/dashboard", to: "dashboard#show"
 
   # Staff quix management routes
-  resources :quizzes, only: [:create, :update, :index] do
+  resources :quizzes, only: [ :create, :update, :index ] do
     member do
       patch :stop
     end
   end
 
   # Student Quiz Access
-  get '/student_quizzes/access/:access_code', to: 'student_quizzes#show', as: 'student_quiz_access'
+  get "/student_quizzes/access/:access_code", to: "student_quizzes#show", as: "student_quiz_access"
 
   # Student Quiz Submission
-  post '/quiz_submissions', to: 'quiz_submissions#create'
+  post "/quiz_submissions", to: "quiz_submissions#create"
 
   # Staff Quiz Reports
-  get '/quiz_reports/:quiz_id', to: 'quiz_reports#show', as: 'quiz_report'
+  get "/quiz_reports/:quiz_id", to: "quiz_reports#show", as: "quiz_report"
 end

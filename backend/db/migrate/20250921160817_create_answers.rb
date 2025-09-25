@@ -8,6 +8,6 @@ class CreateAnswers < ActiveRecord::Migration[7.0]
 
       t.timestamps
     end
-    add_index :answers, [:quiz_submission_id, :question_id], unique: true # ← One answer per question per submission
+    add_index :answers, [ :quiz_submission_id, :question_id ], unique: true # ← One answer per question per submission
   end
 end

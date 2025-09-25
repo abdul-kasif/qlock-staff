@@ -5,9 +5,9 @@ class QuizSubmissionsController < ApplicationController
   # ➤ POST /quiz_submissions
   def create
     unless current_user.role_student?
-      return render json: { error: "Access denied, Stundents only"}, status: :forbidden
+      return render json: { error: "Access denied, Stundents only" }, status: :forbidden
     end
-    
+
     quiz = Quiz.find(params[:quiz_id])
     submission = QuizSubmission.find_or_initialize_by(user: current_user, quiz: quiz)
 
@@ -17,7 +17,7 @@ class QuizSubmissionsController < ApplicationController
 
     if submission.new_record?
       submission.started_at = Time.current
-      submission.status = 'started'
+      submission.status = "started"
       submission.save!
     end
 

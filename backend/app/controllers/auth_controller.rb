@@ -4,15 +4,15 @@ class AuthController < ApplicationController
 
     # Check email is empty
     if email.blank?
-      return render json: { error: "Email is required"}, status: :bad_request
-    end
-    
-    # Check email format is valid
-    unless email.match?(URI::MailTo::EMAIL_REGEXP)
-      return render json: { error: "Invalid email format"}, status: :bad_request
+      return render json: { error: "Email is required" }, status: :bad_request
     end
 
-    # Create or find OTP 
+    # Check email format is valid
+    unless email.match?(URI::MailTo::EMAIL_REGEXP)
+      return render json: { error: "Invalid email format" }, status: :bad_request
+    end
+
+    # Create or find OTP
     otp = Otp.find_or_initialize_by(email: email)
 
     otp.generate_otp
@@ -21,7 +21,7 @@ class AuthController < ApplicationController
     SendOtpMailerJob.perform_now(otp.id)
 
     render json: {
-      message: "OTP sent to #{email}",
+      message: "OTP sent to #{email}"
     }, status: :ok
 
   rescue StandardError => e
@@ -44,12 +44,12 @@ class AuthController < ApplicationController
 
     # Check OTP exists
     if otp.nil?
-      return render json: { error: "Not Found, Please request a new one"}, status: :not_found
+      return render json: { error: "Not Found, Please request a new one" }, status: :not_found
     end
-    
+
     # Check OTP is expired or not
     if otp.otp_expired?
-      return render json: { error: "OTP expired, Please request a new one"}, status: :unprocessable_content
+      return render json: { error: "OTP expired, Please request a new one" }, status: :unprocessable_content
     end
 
     # Check the input OTP is vaild or not
@@ -76,9 +76,9 @@ class AuthController < ApplicationController
 
     else
       if otp.attempts.to_i >= MAX_OTP_ATTEMPTS.to_i
-        return render json: { error: "Too many attempt, Please generate a new one"}, status: :locked
+        render json: { error: "Too many attempt, Please generate a new one" }, status: :locked
       else
-        return render json: { error: "Invalid OTP"}, status: :unprocessable_content
+        render json: { error: "Invalid OTP" }, status: :unprocessable_content
       end
     end
   rescue StandardError => e
