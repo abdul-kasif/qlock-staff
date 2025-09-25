@@ -9,7 +9,7 @@ class QuizReportsController < ApplicationController
 
     submissions = quiz.quiz_submissions.includes(
       :user,
-      { answers: [:question, :selected_option] }
+      { answers: [ :question, :selected_option ] }
     ).order(submitted_at: :desc)
 
     render json: {
@@ -47,7 +47,7 @@ class QuizReportsController < ApplicationController
   def ensure_staff
     unless current_user.role_staff?
       render json: { error: "Access denied. Staff only." }, status: :forbidden
-      return false
+      false
     end
   end
 end

@@ -3,7 +3,7 @@ class Question < ApplicationRecord
   has_many :options, dependent: :destroy
 
   accepts_nested_attributes_for :options, allow_destroy: false
-  
+
   validates :text, presence: true
   validates :order, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validate :unique_order_within_quiz

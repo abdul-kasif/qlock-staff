@@ -1,7 +1,7 @@
 class JwtError < StandardError; end
 
 class JwtService
-  ALGORITHM = 'HS256'.freeze
+  ALGORITHM = "HS256".freeze
 
   class << self
     # Encode a payload into a JWT token
@@ -17,14 +17,14 @@ class JwtService
     # @return [HashWithIndifferentAccess] the decoded payload
     # @raise [JwtError] if token is invalid or expired
     def decode(token)
-      raise JwtError, 'Token is blank' if token.blank?
+      raise JwtError, "Token is blank" if token.blank?
 
       decoded = JWT.decode(token, secret_key, true, { algorithm: ALGORITHM })
       HashWithIndifferentAccess.new(decoded[0])
     rescue JWT::ExpiredSignature
-      raise JwtError, 'Token has expired'
+      raise JwtError, "Token has expired"
     rescue JWT::DecodeError
-      raise JwtError, 'Invalid token'
+      raise JwtError, "Invalid token"
     end
 
     private

@@ -8,6 +8,6 @@ class CreateQuestions < ActiveRecord::Migration[8.0]
 
       t.timestamps
     end
-    add_index :questions, [:quiz_id, :order], unique: false # optional: enforce order uniqueness per quiz
+    add_index :questions, [ :quiz_id, :order ], unique: false # optional: enforce order uniqueness per quiz
   end
 end

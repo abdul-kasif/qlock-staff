@@ -9,7 +9,7 @@ class Otp < ApplicationRecord
     self.email = email.downcase.strip if email.present?
   end
 
-  # Generate the OTP 
+  # Generate the OTP
   def generate_otp
     self.code = rand(100000..999999).to_s
     self.expires_at = OTP_EXPIRY_MINUTES.minutes.from_now
@@ -24,17 +24,17 @@ class Otp < ApplicationRecord
 
     if self.code.to_s == input_otp.to_s.strip
       self.destroy
-      return true
+      true
     else
       self.attempts ||= 0
       self.attempts += 1
       save!
-      return false
+      false
     end
   end
 
   # Check OTP is expired
   def otp_expired?
-    return true if expires_at.present? && expires_at < Time.current 
+    true if expires_at.present? && expires_at < Time.current
   end
 end

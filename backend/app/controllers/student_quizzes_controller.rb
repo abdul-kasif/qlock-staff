@@ -5,16 +5,16 @@ class StudentQuizzesController < ApplicationController
   # ➤ GET student_quizzes/access/:access_code
   def show
     unless current_user.role_student?
-      return render json: { error: "Access denied, Stundents only"}, status: :forbidden
+      return render json: { error: "Access denied, Stundents only" }, status: :forbidden
     end
 
 
     @quiz = Quiz.status_active.find_by!(access_code: params[:access_code])
 
-    if current_user.quiz_submissions.find_by(user_id: current_user, quiz_id: @quiz.id).status_submitted?
+    unless current_user.quiz_submissions.find_by(user_id: current_user, quiz_id: @quiz.id) === nil
       return render json: { error: "Already submitted" }, status: :unprocessable_content
     end
-    
+
     render json: {
       quiz: {
         id: @quiz.id,
