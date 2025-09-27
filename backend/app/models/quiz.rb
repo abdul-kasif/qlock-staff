@@ -18,7 +18,7 @@ class Quiz < ApplicationRecord
     def generate_access_code
         return if access_code.present?
         self.access_code = loop do
-            token = SecureRandom.alphanumeric(6).upcase
+            token = rand(100000..999999).to_s
             break token unless Quiz.status_active.where.not(id: id).exists?(access_code: token)
         end
     end
