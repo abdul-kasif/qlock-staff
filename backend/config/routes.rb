@@ -21,6 +21,7 @@ Rails.application.routes.draw do
 
   # Student Quiz Submission
   post "/quiz_submissions", to: "quiz_submissions#create"
+  get "/quiz_submissions/:access_code", to: "quiz_submissions#show"
 
   # Staff Quiz Reports
   get "/quiz_reports/:quiz_id", to: "quiz_reports#show", as: "quiz_report"

@@ -16,29 +16,10 @@ class StudentQuizzesController < ApplicationController
       return render json: { error: "Already submitted" }, status: :unprocessable_entity
     end
 
-    # Create or resume submission
-    submission ||= current_user.quiz_submissions.build(quiz: quiz, started_at: Time.current, status: 'started')
-    submission.save! if submission.new_record?
+   render json: {
+      message: "valid access code"
+    }, status: :ok
 
-    render json: {
-      quiz: {
-        id: quiz.id,
-        title: quiz.title,
-        time_limit_minutes: quiz.time_limit_minutes,
-        questions: quiz.questions.order(:order).map do |question|
-          {
-            id: question.id,
-            text: question.text,
-            options: question.options.order(:order).map do |option|
-              {
-                id: option.id,
-                text: option.text
-              }
-            end
-          }
-        end
-      }
-    }
   rescue ActiveRecord::RecordNotFound => e
     Rails.logger.error "Quiz fetch failed: #{e.message}"
     render json: { error: "Invalid or expired access code" }, status: :not_found
