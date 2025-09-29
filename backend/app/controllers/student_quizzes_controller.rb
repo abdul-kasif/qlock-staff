@@ -15,6 +15,15 @@ class StudentQuizzesController < ApplicationController
       return render json: { error: "Already submitted" }, status: :unprocessable_content
     end
 
+    # New Quiz Submission record
+    submission = QuizSubmission.find_or_initialize_by(user_id: current_user.id, quiz_id: @quiz.id)
+
+    if submission.new_record?
+      submission.started_at = Time.current
+      submission.status = "started"
+      submission.save!
+    end
+
     render json: {
       quiz: {
         id: @quiz.id,

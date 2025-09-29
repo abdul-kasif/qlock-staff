@@ -15,12 +15,6 @@ class QuizSubmissionsController < ApplicationController
       return render json: { error: "You have already submitted this quiz." }, status: :forbidden
     end
 
-    if submission.new_record?
-      submission.started_at = Time.current
-      submission.status = "started"
-      submission.save!
-    end
-
     # Submit answers + auto-grade
     submission.submit_answers!(answer_params)
 
