@@ -1,11 +1,45 @@
 // src/components/quiz-builder/QuestionList.jsx
-import { Plus, Upload } from "lucide-react";
+import { Plus, Upload, Download } from "lucide-react";
 import QuestionEditor from "./QuestionEditor";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
+import React from "react";
+
+// Generate and download Excel template
+const downloadTemplate = () => {
+  const templateData = [
+    [
+      "Q.No",
+      "Question",
+      "Choice A",
+      "Choice B",
+      "Choice C",
+      "Choice D",
+      "Correct",
+    ],
+    [
+      1,
+      "What is SQL?",
+      "Structured Query Language",
+      "Simple Query Language",
+      "System Query Logic",
+      "Standard Question Logic",
+      "A",
+    ],
+    [2, "Which is NoSQL?", "MySQL", "PostgreSQL", "MongoDB", "SQLite", "C"],
+  ];
+
+  const worksheet = XLSX.utils.aoa_to_sheet(templateData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Quiz_Template");
+  XLSX.writeFile(workbook, "QLock_Quiz_Template.xlsx");
+};
 
 export default function QuestionList({ draft, saveDraft }) {
+  const fileInputRef = React.useRef(null);
+
   const addQuestion = () => {
     const newQuestion = {
       text: "",
@@ -40,7 +74,6 @@ export default function QuestionList({ draft, saveDraft }) {
     });
   };
 
-  // Handle Excel file upload
   const handleFileUpload = (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -54,66 +87,102 @@ export default function QuestionList({ draft, saveDraft }) {
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-        if (jsonData.length < 2) {
-          toast.error("Excel must contain at least one question row.");
+        if (jsonData.length < 1) {
+          toast.error("Excel file is empty.");
           return;
         }
 
-        // Remove header row if exists (optional)
-        const rows = Array.isArray(jsonData[0]) && jsonData[0].length === 7 && 
-                     typeof jsonData[0][0] === 'string' && 
-                     jsonData[0][0].toLowerCase().includes('question') 
-          ? jsonData.slice(1) 
-          : jsonData;
+        // Auto-detect and skip header if present
+        const hasHeader =
+          jsonData[0].length === 7 &&
+          typeof jsonData[0][0] === "string" &&
+          jsonData[0][0].toString().toLowerCase().includes("q.no");
+        const rows = hasHeader ? jsonData.slice(1) : jsonData;
 
-        // Validate and parse questions
+        if (rows.length === 0) {
+          toast.error("No question rows found in Excel file.");
+          return;
+        }
+
         const parsedQuestions = [];
-        for (let i = 1; i < rows.length; i++) {
+        for (let i = 0; i < rows.length; i++) {
           const row = rows[i];
           if (row.length !== 7) {
-            toast.error(`Row ${i + 1}: Must have exactly 7 columns.`);
+            toast.error(
+              `Row ${i + 1 + (hasHeader ? 1 : 0)}: Must have exactly 7 columns.`
+            );
             return;
           }
 
-          const [, questionText, choiceA, choiceB, choiceC, choiceD, correctChoice] = row;
+          const [
+            ,
+            questionText,
+            choiceA,
+            choiceB,
+            choiceC,
+            choiceD,
+            correctChoice,
+          ] = row;
 
-          // Validate non-empty
           if (!questionText || !choiceA || !choiceB || !choiceC || !choiceD) {
-            toast.error(`Row ${i + 1}: All fields must be filled.`);
+            toast.error(
+              `Row ${i + 1 + (hasHeader ? 1 : 0)}: All fields must be filled.`
+            );
             return;
           }
 
-          // Validate correct choice
-          const correctMap = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
-          const correctIndex = correctMap[correctChoice?.toString().trim().toUpperCase()];
+          const correctMap = { A: 0, B: 1, C: 2, D: 3 };
+          const correctIndex =
+            correctMap[correctChoice?.toString().trim().toUpperCase()];
           if (correctIndex === undefined) {
-            toast.error(`Row ${i + 1}: Correct choice must be A, B, C, or D.`);
+            toast.error(
+              `Row ${
+                i + 1 + (hasHeader ? 1 : 0)
+              }: Correct choice must be A, B, C, or D.`
+            );
             return;
           }
-
-          const options = [
-            { text: choiceA, is_correct: correctIndex === 0, order: 1 },
-            { text: choiceB, is_correct: correctIndex === 1, order: 2 },
-            { text: choiceC, is_correct: correctIndex === 2, order: 3 },
-            { text: choiceD, is_correct: correctIndex === 3, order: 4 },
-          ];
 
           parsedQuestions.push({
-            text: questionText,
-            options,
+            text: questionText.trim(),
+            options: [
+              {
+                text: choiceA.trim(),
+                is_correct: correctIndex === 0,
+                order: 1,
+              },
+              {
+                text: choiceB.trim(),
+                is_correct: correctIndex === 1,
+                order: 2,
+              },
+              {
+                text: choiceC.trim(),
+                is_correct: correctIndex === 2,
+                order: 3,
+              },
+              {
+                text: choiceD.trim(),
+                is_correct: correctIndex === 3,
+                order: 4,
+              },
+            ],
           });
         }
 
-        // Add to draft
         saveDraft({
           ...draft,
           questions: [...draft.questions, ...parsedQuestions],
         });
 
-        toast.success(`Successfully imported ${parsedQuestions.length} questions!`);
+        toast.success(
+          `Successfully imported ${parsedQuestions.length} questions!`
+        );
       } catch (error) {
         console.error("Excel parsing error:", error);
-        toast.error("Failed to parse Excel file. Please check the format.");
+        toast.error(
+          "Failed to parse Excel file. Please use the provided template."
+        );
       }
     };
 
@@ -122,48 +191,61 @@ export default function QuestionList({ draft, saveDraft }) {
 
   return (
     <Card className="mb-6">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Questions</CardTitle>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={downloadTemplate}
+          className="gap-2 h-8"
+        >
+          <Download className="h-3 w-3" />
+          <span className="text-xs">Template</span>
+        </Button>
       </CardHeader>
       <CardContent>
         {draft.questions.length === 0 ? (
-          <div className="text-center py-8 space-y-6">
-            <p className="text-muted-foreground">
-              No questions yet. Add manually or upload from Excel.
-            </p>
+          <div className="py-10 text-center">
+            <div className="max-w-md mx-auto space-y-6">
+              <p className="text-muted-foreground">
+                Start by adding questions manually or upload a batch via Excel.
+              </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              {/* Manual Add */}
-              <button
-                onClick={addQuestion}
-                className="inline-flex flex-col items-center justify-center w-24 h-24 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors p-3"
-                aria-label="Add question manually"
-              >
-                <Plus className="h-6 w-6 mb-1" />
-                <span className="text-xs font-medium">Add Question</span>
-              </button>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={addQuestion}
+                  className="flex flex-col items-center justify-center gap-2 w-32 h-24"
+                >
+                  <Plus className="h-5 w-5" />
+                  <span>Add Question</span>
+                </Button>
 
-              {/* Excel Upload */}
-              <label
-                htmlFor="excel-upload"
-                className="inline-flex flex-col items-center justify-center w-24 h-24 rounded-xl bg-secondary text-secondary-foreground hover:bg-secondary/80 cursor-pointer transition-colors p-3"
-              >
-                <Upload className="h-6 w-6 mb-1" />
-                <span className="text-xs font-medium">Upload Excel</span>
+                {/* 🔹 Replaced label+input with programmatic click */}
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="flex flex-col items-center justify-center gap-2 w-32 h-24"
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Upload className="h-5 w-5" />
+                  <span>Upload Excel</span>
+                </Button>
                 <input
+                  ref={fileInputRef}
                   id="excel-upload"
                   type="file"
                   accept=".xlsx,.xls"
                   onChange={handleFileUpload}
                   className="hidden"
                 />
-              </label>
-            </div>
+              </div>
 
-            {/* Format Guide */}
-            <div className="text-xs text-muted-foreground max-w-md mx-auto">
-              <p className="font-medium mb-1">Excel Format:</p>
-              <p>Columns: Q.No | Question | Choice A | Choice B | Choice C | Choice D | Correct (A/B/C/D)</p>
+              <p className="text-xs text-muted-foreground mt-4">
+                Format: Q.No | Question | Choice A–D | Correct (A/B/C/D)
+              </p>
             </div>
           </div>
         ) : (
