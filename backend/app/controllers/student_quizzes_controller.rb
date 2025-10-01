@@ -17,7 +17,12 @@ class StudentQuizzesController < ApplicationController
     end
 
    render json: {
-      message: "valid access code"
+      message: "valid access code",
+      quiz: {
+        id: quiz.id,
+        title: quiz.title,
+        time_limit_minutes: quiz.time_limit_minutes
+      }
     }, status: :ok
 
   rescue ActiveRecord::RecordNotFound => e
