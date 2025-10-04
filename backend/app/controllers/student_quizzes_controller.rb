@@ -2,49 +2,31 @@ class StudentQuizzesController < ApplicationController
   include Authenticable
   before_action :authenticate_user!
 
-  # ➤ GET student_quizzes/access/:access_code
+  # ➤ GET /student_quizzes/access/:access_code
   def show
     unless current_user.role_student?
-      return render json: { error: "Access denied, Stundents only" }, status: :forbidden
+      return render json: { error: "Access denied, Students only" }, status: :forbidden
     end
 
+    quiz = Quiz.status_active.find_by!(access_code: params[:access_code])
 
-    @quiz = Quiz.status_active.find_by!(access_code: params[:access_code])
-
-    unless current_user.quiz_submissions.find_by(user_id: current_user, quiz_id: @quiz.id) === nil
-      return render json: { error: "Already submitted" }, status: :unprocessable_content
+    # Check if already submitted
+    submission = current_user.quiz_submissions.find_by(quiz: quiz)
+    if submission&.status_submitted?
+      return render json: { error: "Already submitted" }, status: :unprocessable_entity
     end
 
-    # New Quiz Submission record
-    submission = QuizSubmission.find_or_initialize_by(user_id: current_user.id, quiz_id: @quiz.id)
-
-    if submission.new_record?
-      submission.started_at = Time.current
-      submission.status = "started"
-      submission.save!
-    end
-
-    render json: {
+   render json: {
+      message: "valid access code",
       quiz: {
-        id: @quiz.id,
-        title: @quiz.title,
-        time_limit_minutes: @quiz.time_limit_minutes,
-        questions: @quiz.questions.order(:order).map do |q|
-          {
-            id: q.id,
-            text: q.text,
-            options: q.options.order(:order).map do |opt|
-              {
-                id: opt.id,
-                text: opt.text
-              }
-            end
-          }
-        end
+        id: quiz.id,
+        title: quiz.title,
+        time_limit_minutes: quiz.time_limit_minutes
       }
-    }
+    }, status: :ok
+
   rescue ActiveRecord::RecordNotFound => e
-    Rails.logger.error "Failed to fetch the quiz #{e.message}"
+    Rails.logger.error "Quiz fetch failed: #{e.message}"
     render json: { error: "Invalid or expired access code" }, status: :not_found
   end
 end
