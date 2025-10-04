@@ -64,11 +64,11 @@ export default function SubmissionTable({ report }) {
                     {submission.student_name}
                   </TableCell>
                   <TableCell>
-                    {new Date(submission.started_at).toLocaleString()}
+                    {new Date(submission.started_at).toLocaleString("en-GB")}
                   </TableCell>
                   <TableCell>
                     {submission.submitted_at
-                      ? new Date(submission.submitted_at).toLocaleString()
+                      ? new Date(submission.submitted_at).toLocaleString("en-GB")
                       : "—"}
                   </TableCell>
                   <TableCell className="font-bold">

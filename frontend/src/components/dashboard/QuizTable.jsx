@@ -93,7 +93,7 @@ export default function QuizTable({
                         <TableCell>{quiz.subject_code}</TableCell>
                         <TableCell>{quiz.time_limit_minutes} min</TableCell>
                         <TableCell>
-                          {new Date(quiz.started_at).toLocaleString()}
+                          {new Date(quiz.started_at).toLocaleString("en-GB")}
                         </TableCell>
                         <TableCell className="text-center">
                           <Button
@@ -140,11 +140,11 @@ export default function QuizTable({
                         <TableCell>{quiz.subject_code}</TableCell>
                         <TableCell>{quiz.time_limit_minutes} min</TableCell>
                         <TableCell>
-                          {new Date(quiz.started_at).toLocaleString()}
+                          {new Date(quiz.started_at).toLocaleString("en-GB")}
                         </TableCell>
                         <TableCell>
                           {quiz.ended_at
-                            ? new Date(quiz.ended_at).toLocaleString()
+                            ? new Date(quiz.ended_at).toLocaleString("en-GB")
                             : "—"}
                         </TableCell>
                         <TableCell className="text-center">
