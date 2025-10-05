@@ -1,3 +1,4 @@
+// src/components/quiz-report/SubmissionTable.jsx
 import {
   Table,
   TableBody,
@@ -7,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, X } from "lucide-react";
+import { Check, X, Minus } from "lucide-react";
 
 export default function SubmissionTable({ report }) {
   if (!report.submissions || report.submissions.length === 0) {
@@ -20,20 +21,28 @@ export default function SubmissionTable({ report }) {
     );
   }
 
-  // Get all unique question IDs for column headers
-  const questionIds = [
-    ...new Set(
-      report.submissions.flatMap((sub) =>
-        sub.answers.map((ans) => ans.question_id)
-      )
-    ),
-  ];
+  // Extract questions from report (more reliable than from submissions)
+  const questionMap = {};
+  if (report.questions) {
+    report.questions.forEach((q) => {
+      questionMap[q.id] = q.text;
+    });
+  }
 
-  // Get question text for each ID (from first submission)
+  // Get question IDs in order
+  const questionIds = report.questions
+    ? report.questions.map((q) => q.id)
+    : [
+        ...new Set(
+          report.submissions.flatMap((sub) =>
+            sub.answers.map((ans) => ans.question_id)
+          )
+        ),
+      ];
+
+  // Get question text safely
   const getQuestionText = (questionId) => {
-    const firstSub = report.submissions[0];
-    const answer = firstSub.answers.find((a) => a.question_id === questionId);
-    return answer ? answer.question_text : `Q${questionId}`;
+    return questionMap[questionId] || `Question ${questionId}`;
   };
 
   return (
@@ -51,7 +60,7 @@ export default function SubmissionTable({ report }) {
                 <TableHead>Submitted At</TableHead>
                 <TableHead>Score</TableHead>
                 {questionIds.map((qid) => (
-                  <TableHead key={qid} className="whitespace-nowrap">
+                  <TableHead key={qid} className="whitespace-nowrap min-w-[120px]">
                     {getQuestionText(qid)}
                   </TableHead>
                 ))}
@@ -78,22 +87,34 @@ export default function SubmissionTable({ report }) {
                     const answer = submission.answers.find(
                       (a) => a.question_id === qid
                     );
+
+                    if (!answer) {
+                      return (
+                        <TableCell key={qid} className="text-center text-muted-foreground">
+                          —
+                        </TableCell>
+                      );
+                    }
+
+                    const isNotAttempted = answer.selected_option_id === null;
+                    const isSelected = answer.selected_option_text && !isNotAttempted;
+
                     return (
                       <TableCell key={qid} className="text-center">
-                        {answer ? (
-                          <div className="flex flex-col items-center">
-                            <span className="text-xs mb-1">
-                              {answer.selected_option_text}
-                            </span>
-                            {answer.correct ? (
-                              <Check className="h-4 w-4 text-green-500" />
-                            ) : (
-                              <X className="h-4 w-4 text-red-500" />
-                            )}
-                          </div>
-                        ) : (
-                          "—"
-                        )}
+                        <div className="flex flex-col items-center">
+                          <span className="text-xs mb-1 max-w-[100px] truncate">
+                            {answer.selected_option_text || "—"}
+                          </span>
+                          {isNotAttempted ? (
+                            <Minus className="h-4 w-4 text-gray-400" />
+                          ) : answer.correct === true ? (
+                            <Check className="h-4 w-4 text-green-500" />
+                          ) : answer.correct === false ? (
+                            <X className="h-4 w-4 text-red-500" />
+                          ) : (
+                            <Minus className="h-4 w-4 text-gray-400" />
+                          )}
+                        </div>
                       </TableCell>
                     );
                   })}
