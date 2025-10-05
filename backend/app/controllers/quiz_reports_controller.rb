@@ -7,9 +7,12 @@ class QuizReportsController < ApplicationController
   def show
     quiz = current_user.quizzes.find(params[:quiz_id])
 
+    # ➤ Fetch all questions in order (once)
+    all_questions = quiz.questions.order(:order).to_a
+
     submissions = quiz.quiz_submissions.includes(
       :user,
-      { answers: [ :question, :selected_option ] }
+      { answers: [:question, :selected_option] }
     ).order(submitted_at: :desc)
 
     render json: {
@@ -20,7 +23,17 @@ class QuizReportsController < ApplicationController
       semester: quiz.semester,
       time_limit_minutes: quiz.time_limit_minutes,
       total_students: submissions.count,
+      questions: all_questions.map do |q|
+        {
+          id: q.id,
+          text: q.text,
+          order: q.order,
+        }
+      end,
       submissions: submissions.map do |sub|
+        # Build answer map: question_id → answer details
+        answer_map = sub.answers.index_by(&:question_id)
+
         {
           id: sub.id,
           student_name: sub.user.name,
@@ -28,17 +41,25 @@ class QuizReportsController < ApplicationController
           submitted_at: sub.submitted_at,
           status: sub.status,
           score: sub.score,
-          answers: sub.answers.map do |ans|
-            {
-              question_id: ans.question.id,
-              question_text: ans.question.text,
-              selected_option_id: ans.selected_option.id,
-              selected_option_text: ans.selected_option.text,
-              correct: ans.selected_option.is_correct
-            }
-          end
+          answers: all_questions.map do |question|
+            if answer = answer_map[question.id]
+              {
+                question_id: question.id,
+                selected_option_id: answer.selected_option.id,
+                selected_option_text: answer.selected_option.text,
+                correct: answer.selected_option.is_correct,
+              }
+            else
+              {
+                question_id: question.id,
+                selected_option_id: nil,
+                selected_option_text: "Not Attempted",
+                correct: nil,
+              }
+            end
+          end,
         }
-      end
+      end,
     }
   end
 

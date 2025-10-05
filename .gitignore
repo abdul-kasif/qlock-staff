@@ -16,6 +16,7 @@
 
 # Credentials (VERY IMPORTANT)
 /backend/config/master.key
+/backend/config/credentials.yml.enc
 
 # Environment variables
 /backend/.env
