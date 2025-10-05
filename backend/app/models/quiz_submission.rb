@@ -9,7 +9,7 @@ class QuizSubmission < ApplicationRecord
   validates :user_id, uniqueness: { scope: :quiz_id } # One submission per student per quiz
 
   # Submit answers + auto-grade
-  def submit_answers!(answer_params)
+  def submit_answers!(answer_params = [])
     raise "Quiz already submitted" if status_submitted?
 
     # Use transaction — all or nothing

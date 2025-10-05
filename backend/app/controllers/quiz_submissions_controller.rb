@@ -50,21 +50,11 @@ class QuizSubmissionsController < ApplicationController
     end
 
     # Submit answers + auto-grade
-    submission.submit_answers!(answer_params)
+    answers = params[:answers] || []
+    submission.submit_answers!(answers)
 
     render json: submission, status: :ok
   rescue => e
     render json: { error: e.message }, status: :unprocessable_content
-  end
-
-  private
-
-  def answer_params
-    params.require(:answers).map do |ans|
-      {
-        question_id: ans[:question_id],
-        selected_option_id: ans[:selected_option_id]
-      }
-    end
   end
 end
