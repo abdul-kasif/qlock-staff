@@ -2,9 +2,9 @@
 class QuizzesController < ApplicationController
   include Authenticable
   before_action :authenticate_user!
-  before_action :ensure_staff, only: [ :create, :update, :stop ]
+  before_action :ensure_staff, only: [:create, :update, :complete, :pause, :resume]
 
-  # ➤ POST /quizzes
+  # POST /quizzes
   def create
     service = QuizCreationService.new(current_user, quiz_params)
 
@@ -12,23 +12,22 @@ class QuizzesController < ApplicationController
       render json: quiz.as_json(
         include: {
           questions: {
-            only: [ :id, :text, :order ],
+            only: [:id, :text, :order],
             include: {
-              options: { only: [ :id, :text, :is_correct, :order ] }
-            }
-          }
+              options: { only: [:id, :text, :is_correct, :order] },
+            },
+          },
         },
-        except: [ :user_id ]
+        except: [:user_id],
       ), status: :created
     else
-      render json: { errors: service.quiz.errors }, status: :unprocessable_entity
+      render json: { errors: service.quiz.errors }, status: :unprocessable_content
     end
   rescue StandardError => e
     Rails.logger.error "Failed to create quiz #{e.message}"
   end
 
-
-  # ➤ PATCH /quizzes/:id
+  # PATCH /quizzes/:id
   def update
     @quiz = current_user.quizzes.find(params[:id])
 
@@ -39,8 +38,30 @@ class QuizzesController < ApplicationController
     end
   end
 
-  # ➤ PATCH /quizzes/:id/stop
-  def stop
+  # PATCH /quizzes/:id/pause
+  def pause
+    @quiz = current_user.quizzes.find(params[:id])
+
+    if @quiz.pause!
+      render json: @quiz
+    else
+      render json: { errors: @quiz.errors }, status: :unprocessable_content
+    end
+  end
+
+  # PATCH /quizzes/:id/resume
+  def resume
+    @quiz = current_user.quizzes.find(params[:id])
+
+    if @quiz.resume!
+      render json: @quiz
+    else
+      render json: { errors: @quiz.errors }, status: :unprocessable_content
+    end
+  end
+
+  # PATCH /quizzes/:id/complete
+  def complete
     @quiz = current_user.quizzes.find(params[:id])
     if @quiz.stop!
       render json: @quiz
@@ -52,7 +73,7 @@ class QuizzesController < ApplicationController
     render json: { error: "Failed to stop the quiz" }, status: :unprocessable_content
   end
 
-  # ➤ GET /quizzes (for staff dashboard)
+  # GET /quizzes (for staff dashboard)
   def index
     @quizzes = current_user.quizzes.order(created_at: :desc)
     render json: @quizzes
@@ -66,8 +87,8 @@ class QuizzesController < ApplicationController
       :time_limit_minutes, :started_at, :ended_at,
       questions: [
         :text,
-        options: [ :text, :is_correct ]
-      ]
+        options: [:text, :is_correct],
+      ],
     )
     Rails.logger.info "PERMITTED QUIZ PARAMS: #{permitted.inspect}"
     permitted

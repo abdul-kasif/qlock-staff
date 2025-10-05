@@ -10,9 +10,11 @@ Rails.application.routes.draw do
   get "/dashboard", to: "dashboard#show"
 
   # Staff quix management routes
-  resources :quizzes, only: [ :create, :update, :index ] do
+  resources :quizzes, only: [:create, :update, :index] do
     member do
-      patch :stop
+      patch :pause
+      patch :resume
+      patch :complete
     end
   end
 
