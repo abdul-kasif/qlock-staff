@@ -5,7 +5,7 @@ class QuizSubmissionsController < ApplicationController
   def show
     quiz = Quiz.status_active.find_by!(access_code: params[:access_code])
 
-    # Check if already submitted
+    # feat(student_quizzes): block new quiz access when quiz is paused or completed
     submission = current_user.quiz_submissions.find_by(quiz: quiz)
 
     # Create or resume submission
@@ -24,25 +24,31 @@ class QuizSubmissionsController < ApplicationController
             options: question.options.order(:order).map do |option|
               {
                 id: option.id,
-                text: option.text
+                text: option.text,
               }
-            end
+            end,
           }
-        end
-      }
+        end,
+      },
     }
   rescue ActiveRecord::RecordNotFound => e
     Rails.logger.error "Quiz fetch failed: #{e.message}"
     render json: { error: "Invalid or expired access code" }, status: :not_found
   end
 
-  # ➤ POST /quiz_submissions
+  # POST /quiz_submissions
   def create
     unless current_user.role_student?
       return render json: { error: "Access denied, Stundents only" }, status: :forbidden
     end
 
     quiz = Quiz.find(params[:quiz_id])
+
+    # Allow submission if quiz is active OR paused
+    unless quiz.status_active? || quiz.status_paused?
+      return render json: { error: "Quiz is closed, can't submit." }, status: :forbidden
+    end
+
     submission = QuizSubmission.find_or_initialize_by(user: current_user, quiz: quiz)
 
     if submission.status_submitted?
