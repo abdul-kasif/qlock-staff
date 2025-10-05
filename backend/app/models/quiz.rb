@@ -35,6 +35,26 @@ class Quiz < ApplicationRecord
     end
   end
 
+  # Pause the quiz
+  def pause!
+    if status_completed? || status_paused?
+      errors.add(:base, "Only active quizzes can be paused")
+      return false
+    end
+
+    update!(status: :paused)
+  end
+
+  # Resume the quiz
+  def resume!
+    unless status_paused?
+      errors.add(:base, "Only paused quizzess can be resumed")
+      return false
+    end
+
+    update!(status: :active)
+  end
+
   # Stop the quiz
   def stop!
     if status_completed?
