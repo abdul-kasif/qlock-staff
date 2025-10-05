@@ -6,13 +6,14 @@ class DashboardController < ApplicationController
     if current_user.role_student?
       render json: {
         user: user_data,
-        taken_quizzes: taken_quizzes
+        taken_quizzes: taken_quizzes,
       }, status: :ok
     else
       render json: {
         user: user_data,
         active_quizzes: active_quizzes,
-        completed_quizzes: completed_quizzes
+        paused_quizzes: paused_quizzes,
+        completed_quizzes: completed_quizzes,
       }, status: :ok
     end
   rescue StandardError => e
@@ -30,48 +31,44 @@ class DashboardController < ApplicationController
       department: current_user.department,
       email: current_user.email,
       role: current_user.role,
-      profile_complete: current_user.profile_complete
+      profile_complete: current_user.profile_complete,
     }
   end
 
-  # ➤ For STAFF: Active Quizzes
+  # For STAFF: Active Quizzes (status = active)
   def active_quizzes
-    current_user.quizzes.status_active.order(started_at: :desc).map do |quiz|
-      {
-        id: quiz.id,
-        title: quiz.title,
-        degree: quiz.degree,
-        semester: quiz.semester,
-        subject_code: quiz.subject_code,
-        subject_name: quiz.subject_name,
-        time_limit_minutes: quiz.time_limit_minutes,
-        access_code: quiz.access_code,
-        started_at: quiz.started_at,
-        created_at: quiz.created_at
-      }
-    end
+    current_user.quizzes.status_active.order(started_at: :desc).map(&method(:quiz_data))
   end
 
-  # ➤ For STAFF: Completed Quizzes
+  # For STAFF: Paused Quizzes (status = paused)
+  def paused_quizzes
+    current_user.quizzes.status_paused.order(started_at: :desc).map(&method(:quiz_data))
+  end
+
+  # For STAFF: Completed Quizzes (status = completed)
   def completed_quizzes
-    current_user.quizzes.status_completed.order(ended_at: :desc).map do |quiz|
-      {
-        id: quiz.id,
-        title: quiz.title,
-        degree: quiz.degree,
-        semester: quiz.semester,
-        subject_code: quiz.subject_code,
-        subject_name: quiz.subject_name,
-        time_limit_minutes: quiz.time_limit_minutes,
-        access_code: quiz.access_code,
-        started_at: quiz.started_at,
-        ended_at: quiz.ended_at,
-        created_at: quiz.created_at
-      }
-    end
+    current_user.quizzes.status_completed.order(ended_at: :desc).map(&method(:quiz_data))
   end
 
-  # ➤ For STUDENTS: Taken Quizzes
+  # Shared quiz data structure
+  def quiz_data(quiz)
+    {
+      id: quiz.id,
+      title: quiz.title,
+      degree: quiz.degree,
+      semester: quiz.semester,
+      subject_code: quiz.subject_code,
+      subject_name: quiz.subject_name,
+      time_limit_minutes: quiz.time_limit_minutes,
+      access_code: quiz.access_code,
+      status: quiz.status, # e.g., "active", "paused", "completed"
+      started_at: quiz.started_at,
+      ended_at: quiz.ended_at,
+      created_at: quiz.created_at,
+    }
+  end
+
+  # For STUDENTS: Taken Quizzes (unchanged)
   def taken_quizzes
     current_user.quiz_submissions.includes(:quiz).order(submitted_at: :desc).map do |submission|
       {
@@ -83,7 +80,7 @@ class DashboardController < ApplicationController
         started_at: submission.started_at,
         submitted_at: submission.submitted_at,
         status: submission.status,
-        score: submission.score
+        score: submission.score,
       }
     end
   end
