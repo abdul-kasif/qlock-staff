@@ -7,20 +7,12 @@ export default function ExportToExcelButton({ report }) {
   const handleExport = () => {
     if (!report || !report.submissions) return;
 
-    // Prepare data for Excel
-    const questionIds = [
-      ...new Set(
-        report.submissions.flatMap((sub) =>
-          sub.answers.map((ans) => ans.question_id)
-        )
-      ),
-    ];
+    // Use report.questions for correct order and completeness
+    const questionList = report.questions
+      ? [...report.questions].sort((a, b) => a.order - b.order)
+      : [];
 
-    const getQuestionText = (questionId) => {
-      const firstSub = report.submissions[0];
-      const answer = firstSub.answers.find((a) => a.question_id === questionId);
-      return answer ? answer.question_text : `Q${questionId}`;
-    };
+    const questionIds = questionList.map(q => q.id);
 
     // Create header row
     const headers = [
@@ -28,50 +20,52 @@ export default function ExportToExcelButton({ report }) {
       "Started At",
       "Submitted At",
       "Score (%)",
-      ...questionIds.map(getQuestionText),
+      ...questionList.map(q => q.text),
     ];
 
     // Create data rows
     const data = report.submissions.map((submission) => {
       const row = [
         submission.student_name,
-        new Date(submission.started_at).toLocaleString(),
+        new Date(submission.started_at).toLocaleString("en-GB"),
         submission.submitted_at
-          ? new Date(submission.submitted_at).toLocaleString()
+          ? new Date(submission.submitted_at).toLocaleString("en-GB")
           : "—",
-        submission.score,
+        `${submission.score}%`,
       ];
 
-      // Add answers for each question
+      // Add answers for each question in correct order
       questionIds.forEach((qid) => {
-        const answer = submission.answers.find(
-          (a) => a.question_id === qid
-        );
-        row.push(
-          answer
-            ? `${answer.selected_option_text} ${
-                answer.correct ? "(✓)" : "(✗)"
-              }`
-            : "—"
-        );
+        const answer = submission.answers.find(a => a.question_id === qid);
+        if (!answer) {
+          row.push("—");
+          return;
+        }
+
+        const isNotAttempted = answer.selected_option_id === null;
+        if (isNotAttempted) {
+          row.push("Not Attempted");
+        } else if (answer.correct === true) {
+          row.push(`${answer.selected_option_text} (✓)`);
+        } else if (answer.correct === false) {
+          row.push(`${answer.selected_option_text} (✗)`);
+        } else {
+          row.push(answer.selected_option_text || "—");
+        }
       });
 
       return row;
     });
 
-    // Combine headers + data
-    const worksheetData = [headers, ...data];
-
-    // Create worksheet and workbook
-    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+    // Generate worksheet
+    const worksheet = XLSX.utils.aoa_to_sheet([headers, ...data]);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Quiz Report");
 
-    // Generate and download file
-    XLSX.writeFile(
-      workbook,
-      `${report.quiz_title.replace(/\s+/g, "_")}_Report.xlsx`
-    );
+    // Sanitize filename
+    const filename = `${(report.quiz_title || "Quiz_Report").replace(/[^a-z0-9]/gi, '_')}_Report.xlsx`;
+
+    XLSX.writeFile(workbook, filename);
   };
 
   return (
