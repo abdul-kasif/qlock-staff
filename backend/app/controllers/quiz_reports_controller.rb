@@ -3,11 +3,11 @@ class QuizReportsController < ApplicationController
   before_action :authenticate_user!
   before_action :ensure_staff
 
-  # ➤ GET /quiz_reports/:quiz_id
+  # GET /quiz_reports/:quiz_id
   def show
     quiz = current_user.quizzes.find(params[:quiz_id])
 
-    # ➤ Fetch all questions in order (once)
+    # Fetch all questions in order (once)
     all_questions = quiz.questions.order(:order).to_a
 
     submissions = quiz.quiz_submissions.includes(
@@ -22,6 +22,7 @@ class QuizReportsController < ApplicationController
       degree: quiz.degree,
       semester: quiz.semester,
       time_limit_minutes: quiz.time_limit_minutes,
+      status: quiz.status,
       total_students: submissions.count,
       questions: all_questions.map do |q|
         {
