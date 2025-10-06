@@ -3,7 +3,7 @@ class QuizSubmissionsController < ApplicationController
   before_action :authenticate_user!
 
   def show
-    quiz = Quiz.status_active.find_by!(access_code: params[:access_code])
+    quiz = Quiz.status_active.find_by!(access_code: params[:id])
 
     # feat(student_quizzes): block new quiz access when quiz is paused or completed
     submission = current_user.quiz_submissions.find_by(quiz: quiz)
@@ -60,6 +60,48 @@ class QuizSubmissionsController < ApplicationController
     submission.submit_answers!(answers)
 
     render json: submission, status: :ok
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_content
+  end
+
+  # DELETE /quiz_submissions/:id
+  def destroy
+    unless current_user.role_staff?
+      return render json: { error: "Access denied. Staff only" }, status: :forbidden
+    end
+
+    submission = QuizSubmission.find(params[:id])
+
+    unless current_user.id == submission.quiz.user_id
+      return render json: { error: "Access denied" }, status: :forbidden
+    end
+
+    submission.destroy!
+
+    render json: { message: "Quiz deleted successfully" }, status: :ok
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_content
+  end
+
+  # DELETE /quiz_submission/bulk
+  def bulk
+    unless current_user.role_staff?
+      return render json: { error: "Access denied. Staff only" }, status: :forbidden
+    end
+
+    submission_ids = params.require(:submission_ids)
+
+    # Find submissions and verify ownership
+    submissions = QuizSubmission.where(id: submission_ids)
+    quiz_ids = submissions.pluck(:quiz_id).uniq
+
+    # Ensure all quizzes belong to current staff
+    unless Quiz.where(id: quiz_ids, user_id: current_user.id).count == quiz_ids.length
+      return render json: { error: "Access denied" }, status: :forbidden
+    end
+
+    QuizSubmission.where(id: submission_ids).destroy_all
+    render json: { message: "#{submission_ids.length} submissions deleted successfully" }, status: :ok
   rescue => e
     render json: { error: e.message }, status: :unprocessable_content
   end
