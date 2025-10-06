@@ -2,7 +2,7 @@
 class QuizzesController < ApplicationController
   include Authenticable
   before_action :authenticate_user!
-  before_action :ensure_staff, only: [:create, :update, :complete, :pause, :resume]
+  before_action :ensure_staff, only: [:create, :update, :complete, :pause, :resume, :destroy]
 
   # POST /quizzes
   def create
@@ -24,7 +24,8 @@ class QuizzesController < ApplicationController
       render json: { errors: service.quiz.errors }, status: :unprocessable_content
     end
   rescue StandardError => e
-    Rails.logger.error "Failed to create quiz #{e.message}"
+    Rails.logger.error "Failed to create the quiz #{e.message}"
+    render json: { error: "Failed to create the quiz" }, status: :unprocessable_content
   end
 
   # PATCH /quizzes/:id
@@ -36,6 +37,9 @@ class QuizzesController < ApplicationController
     else
       render json: { errors: @quiz.errors }, status: :unprocessable_content
     end
+  rescue StandardError => e
+    Rails.logger.error "Failed to update the quiz #{e.message}"
+    render json: { error: "Failed to update the quiz" }, status: :unprocessable_content
   end
 
   # PATCH /quizzes/:id/pause
@@ -47,6 +51,9 @@ class QuizzesController < ApplicationController
     else
       render json: { errors: @quiz.errors }, status: :unprocessable_content
     end
+  rescue StandardError => e
+    Rails.logger.error "Failed to pause the quiz #{e.message}"
+    render json: { error: "Failed to pause the quiz" }, status: :unprocessable_content
   end
 
   # PATCH /quizzes/:id/resume
@@ -58,6 +65,29 @@ class QuizzesController < ApplicationController
     else
       render json: { errors: @quiz.errors }, status: :unprocessable_content
     end
+  rescue StandardError => e
+    Rails.logger.error "Failed to resume the quiz #{e.message}"
+    render json: { error: "Failed to resume the quiz" }, status: :unprocessable_content
+  end
+
+  # DELETE /api/v1/quizzes/:id
+  def destroy
+    quiz = current_user.quizzes.find(params[:id])
+
+    # Only allow if: completed AND no submissions
+    if !quiz.status_completed?
+      return render json: { error: "Quiz must be completed to delete" }, status: :unprocessable_entity
+    end
+
+    if quiz.quiz_submissions.exists?
+      return render json: { error: "Cannot delete quiz with student submissions" }, status: :unprocessable_entity
+    end
+
+    quiz.destroy!
+    render json: { message: "Quiz deleted successfully" }, status: :ok
+  rescue StandardError => e
+    Rails.logger.error "Failed to delete the quiz #{e.message}"
+    render json: { error: "Failed to delete the quiz #{e.message}" }, status: :unprocessable_content
   end
 
   # PATCH /quizzes/:id/complete
