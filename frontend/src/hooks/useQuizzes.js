@@ -48,6 +48,18 @@ export function useQuizzes() {
     }
   };
 
+  const deleteQuiz = async (id) => {
+    setIsLoading(true);
+    try {
+      await api.delete(`/quizzes/${id}`);
+      setIsLoading(false);
+      return (true);
+    } catch (error) {
+      setIsLoading(false);
+      return false;
+    }
+  }
+
   const fetchAllQuizzes = async (token) => {
     try {
       const response = await api.get("/dashboard");
@@ -80,6 +92,7 @@ export function useQuizzes() {
     resumeQuiz,
     fetchAllQuizzes,
     createQuiz,
+    deleteQuiz,
     isLoading,
   };
 }
