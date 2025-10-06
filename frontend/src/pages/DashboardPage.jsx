@@ -35,13 +35,13 @@ export default function DashboardPage() {
     fetchQuizzes();
   }, [token]);
 
-  //  if (loading) {
-  //   return (
-  //     <div className="flex items-center justify-center min-h-screen">
-  //       <div className="w-12 h-12 border-4 border-t-transparent border-primary rounded-full animate-spin"></div>
-  //     </div>
-  //   );
-  // }
+   if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-12 h-12 border-4 border-t-transparent border-primary rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-8">
