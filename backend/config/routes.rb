@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   get "/dashboard", to: "dashboard#show"
 
   # Staff quix management routes
-  resources :quizzes, only: [:create, :update, :index] do
+  resources :quizzes, only: [:create, :update, :index, :destroy] do
     member do
       patch :pause
       patch :resume
@@ -22,8 +22,11 @@ Rails.application.routes.draw do
   get "/student_quizzes/access/:access_code", to: "student_quizzes#show", as: "student_quiz_access"
 
   # Student Quiz Submission
-  post "/quiz_submissions", to: "quiz_submissions#create"
-  get "/quiz_submissions/:access_code", to: "quiz_submissions#show"
+  resources :quiz_submissions, only: [:show, :create, :destroy] do # Student - :show, :create. Staff - :destroy, :bulk
+    collection do
+      delete :bulk
+    end
+  end
 
   # Staff Quiz Reports
   get "/quiz_reports/:quiz_id", to: "quiz_reports#show", as: "quiz_report"
