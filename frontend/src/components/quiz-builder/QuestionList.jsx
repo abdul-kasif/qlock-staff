@@ -34,7 +34,7 @@ const downloadTemplate = () => {
   const worksheet = XLSX.utils.aoa_to_sheet(templateData);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Quiz_Template");
-  XLSX.writeFile(workbook, "QLock_Quiz_Template.xlsx");
+  XLSX.writeFile(workbook, "CampQ_Quiz_Template.xlsx");
 };
 
 export default function QuestionList({ draft, saveDraft }) {
