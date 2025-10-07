@@ -6,21 +6,59 @@ import { toast } from "sonner";
 export function useQuizzes() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const endQuiz = async (id, onSuccess) => {
+  const pauseQuiz = async (id, onSuccess) => {
     setIsLoading(true);
     try {
-      await api.patch(`/quizzes/${id}/stop`);
-      toast.success("Quiz ended successfully");
-      if (onSuccess && typeof onSuccess === "function") onSuccess();
+      await api.patch(`/quizzes/${id}/pause`);
+      if (onSuccess) onSuccess();
       setIsLoading(false);
       return true;
     } catch (error) {
-      console.error("End quiz error:", error);
-      toast.error("Failed to end quiz");
+      toast.error("Failed to pause quiz");
       setIsLoading(false);
       return false;
     }
   };
+
+  const resumeQuiz = async (id, onSuccess) => {
+    setIsLoading(true);
+    try {
+      await api.patch(`/quizzes/${id}/resume`);
+      if (onSuccess) onSuccess();
+      setIsLoading(false);
+      return true;
+    } catch (error) {
+      toast.error("Failed to resume quiz");
+      setIsLoading(false);
+      return false;
+    }
+  };
+
+  const completeQuiz = async (id, onSuccess) => {
+    setIsLoading(true);
+    try {
+      await api.patch(`/quizzes/${id}/complete`);
+      if (onSuccess) onSuccess();
+      setIsLoading(false);
+      return true;
+    } catch (error) {
+      toast.error("Failed to complete quiz");
+      setIsLoading(false);
+      return false;
+    }
+  };
+
+  const deleteQuiz = async (id) => {
+    setIsLoading(true);
+    try {
+      await api.delete(`/quizzes/${id}`);
+      setIsLoading(false);
+      return (true);
+    } catch (error) {
+      setIsLoading(false);
+      return false;
+    }
+  }
 
   const fetchAllQuizzes = async (token) => {
     try {
@@ -49,9 +87,12 @@ export function useQuizzes() {
 
 
   return {
-    endQuiz,
+    completeQuiz,
+    pauseQuiz,
+    resumeQuiz,
     fetchAllQuizzes,
     createQuiz,
+    deleteQuiz,
     isLoading,
   };
 }
