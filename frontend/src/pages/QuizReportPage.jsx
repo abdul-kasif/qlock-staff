@@ -18,6 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 export default function QuizReportPage() {
   const { id } = useParams();
@@ -94,8 +95,14 @@ export default function QuizReportPage() {
               <Button
                 variant="destructive"
                 size="sm"
-                disabled
-                title="Quiz must be completed with no submissions to delete"
+                onClick={() => {
+                  if (!canDeleteQuiz) {
+                    toast.info("Quiz must be completed and have no submissions records.");
+                  } else {
+                    handleDeleteQuiz();
+                  }
+                }}
+                className={!canDeleteQuiz ? "opacity-60 cursor-not-allowed" : ""}
               >
                 Delete Quiz
               </Button>
