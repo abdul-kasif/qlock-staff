@@ -1,4 +1,4 @@
-# 🚪 Q-Lock Staff Portal
+# 🚪 CampQ Staff Portal
 
 [![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-blue)](frontend/)
 [![Backend](https://img.shields.io/badge/Backend-Ruby%20on%20Rails-red)](backend/)
@@ -27,11 +27,10 @@ A secure staff portal system built with modern web technologies.
 ## 🗂️ Project Structure
 
 ```
-qlock-staff/
+campq-staff/
 ├── frontend/            → React + Vite UI
 ├── backend/             → Ruby on Rails API
 ├── README.md            → You are here!
-├── PROJECT_TRACKER.md   → Feature progress & tasks
 └── .gitignore           → Ignored files (DO NOT MODIFY without approval from Abdul Kasif)
 ```
 
@@ -52,8 +51,8 @@ qlock-staff/
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/abdul-kasif/qlock-staff.git
-cd qlock-staff
+git clone https://github.com/abdul-kasif/campq-staff.git
+cd campq-staff
 
 # 2. Switch to develop branch (ALWAYS start from here!)
 git checkout develop
@@ -62,7 +61,7 @@ git checkout develop
 
 # For Frontend (React + Vite)
 cd frontend
-npm install
+pnpm install
 
 # For Backend (Rails)
 cd ../backend
@@ -97,7 +96,7 @@ curl http://localhost:3000/api/health
 
 ```bash
 cd frontend
-npm run dev
+pnpm run dev
 # ➜ UI runs at: http://localhost:5173
 ```
 ---
@@ -177,7 +176,6 @@ Hey Abdul, I’m stuck on [step/task] — can you help?
 - Always pull the latest `develop` before starting work.
 - Commit **small and often**.
 - Test your feature locally before opening a PR.
-- Update `PROJECT_TRACKER.md` when you **start/finish** a task.
 
 ---
 

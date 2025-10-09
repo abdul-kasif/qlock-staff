@@ -27,7 +27,7 @@ export default function LoginCard({ onVerifySuccess }) {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
-            QLock Staff Portal
+            CampQ Staff Portal
           </CardTitle>
         </CardHeader>
         <CardContent>
